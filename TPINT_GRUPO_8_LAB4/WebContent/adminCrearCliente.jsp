@@ -125,6 +125,49 @@
     
 
     </style>
+
+ <script>
+        function showMessage(message) {
+            alert(message);
+        }
+
+        function validateForm() {
+            var isValid = true;
+            var fields = [
+                'dni', 'cuil', 'nombre', 'apellido', 'telefono1', 'telefono2',
+                'sexo', 'fechaNacimiento', 'direccion', 'nacionalidad', 'provincia',
+                'localidad', 'email'
+            ];
+
+            fields.forEach(function(fieldId) {
+                var field = document.getElementById(fieldId);
+                if (field && field.value.trim() === '') {
+                    isValid = false;
+                    field.style.borderColor = 'red';
+                } else {
+                    if (field) {
+                        field.style.borderColor = '';
+                    }
+                }
+            });
+
+            if (!isValid) {
+                showMessage('Por favor complete todos los campos obligatorios.');
+                return false;
+            }
+            
+            // Custom messages based on the button
+            var button = document.activeElement;
+            if (button.name === 'modificarCliente') {
+                showMessage('Modificación del cliente realizada con éxito.');
+            } else if (button.name === 'SubmitCliente') {
+                showMessage('Cliente aceptado con éxito.');
+            }
+            
+            return true; // Proceed with form submission if validation is successful
+        }
+    </script>
+
 </head>
 <body>
 
@@ -140,7 +183,7 @@
 </div>
 	<h2>Administracion de Clientes</h2>
 	<h3>Crear cliente</h3>
-	<form method="get" action="adminClientesServlet">
+	<form method="get" action="adminClientesServlet" onsubmit="return validateForm()">
 	
 		<%
 			Cliente cAux = null;
@@ -240,7 +283,9 @@
 			
 		</select>
 	
-		
+				<label>Contraseña</label>
+		<input type="password" name="contraseña" id="contraseña" <% if (cAux != null) { %> value="<%  %>" <% } %>>
+		<br>
 	
 
 
@@ -253,14 +298,19 @@
 		if(request.getParameter("clienteId") != null){
 			
 		%>
-		<button type="submit" class="btn btn-primary" name="modificarCliente" id="modificarCliente">Modificar</button>
+		<button type="submit" class="btn btn-primary" name="modificarCliente" id="modificarCliente" >Modificar</button>
 		<input type="hidden" name="idModificar" value="<%= cAux.getId() %>" />
 		<%}
 		 else { %>
 		
-		<button type="submit" class="btn btn-primary" name="SubmitCliente" id="SubmitCliente">Aceptar</button>
+		<button type="submit" class="btn btn-primary" name="SubmitCliente" id="SubmitCliente" >Aceptar</button>
 		
 		<%} %>
+	
+	
+	
+	
+	
 	
 	    </div>
 		</div>
