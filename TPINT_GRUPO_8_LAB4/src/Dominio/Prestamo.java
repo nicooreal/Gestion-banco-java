@@ -2,7 +2,7 @@ package Dominio;
 
 public class Prestamo {
 	
-	public enum ESTADO { Solicitado, Aprobado, Rechazado,Finalizado };
+	public enum ESTADO { Solicitado, Aprobado, Rechazado, Finalizado };
 	private int idPrestamo;
 	private java.util.Date fechaAlta;
 	private Cliente cliente;

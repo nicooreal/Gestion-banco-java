@@ -18,20 +18,17 @@ public class ClienteDao implements iClienteDao{
 	private static final String buscarConId ="SELECT clientes.*,telefonos.id_telefono, telefonos.telefono1, telefonos.telefono2 " + "FROM clientes " + "LEFT JOIN telefonos ON clientes.id_cliente = telefonos.id_cliente " +  "WHERE clientes.id_cliente = ?"; 
 	private static final String insertCliente = "INSERT INTO `bd_banco`.`clientes`(DNI, CUIL, nombre, apellido, sexo, nacionalidad, fecha_nacimiento, direccion, localidad, provincia, correo_electronico, estado) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	private static final String deleteCliente = "DELETE FROM `bd_banco`.`clientes` WHERE id_cliente = ?;";
-    private static final String selectAll = "SELECT  clientes.id_cliente, clientes.DNI, clientes.CUIL, clientes.nombre,  clientes.apellido, clientes.sexo, clientes.nacionalidad, clientes.fecha_nacimiento, clientes.direccion, clientes.localidad,  clientes.provincia, clientes.correo_electronico, clientes.estado,  telefonos.id_telefono, telefonos.telefono1, telefonos.telefono2 FROM  clientes LEFT JOIN  telefonos ON clientes.id_cliente = telefonos.id_cliente ORDER BY id_cliente ASC;";
+    private static final String selectAll = "SELECT  clientes.id_cliente, clientes.DNI, clientes.CUIL, clientes.nombre,  clientes.apellido, clientes.sexo, clientes.nacionalidad, clientes.fecha_nacimiento, clientes.direccion, clientes.localidad,  clientes.provincia, clientes.correo_electronico, clientes.estado,  telefonos.id_telefono, telefonos.telefono1, telefonos.telefono2 FROM  clientes LEFT JOIN  telefonos ON clientes.id_cliente = telefonos.id_cliente;";
     private static final String bajaLogica = "UPDATE clientes SET estado = 'false' WHERE id_cliente = ?;";
     private static final String updateCliente = "UPDATE clientes SET DNI = ?, CUIL = ?, nombre = ?, apellido = ?, sexo = ?, nacionalidad = ?, fecha_nacimiento = ?, direccion = ?, localidad = ?, provincia = ?, correo_electronico = ?, estado = ? WHERE id_cliente = ?;";
     private static final String altaLogica = "UPDATE clientes SET estado = 'true' WHERE id_cliente = ?;";
     private static final String modificarTelefonos = "UPDATE telefonos SET telefono1 = ?, telefono2 =? WHERE id_cliente =?";
     private static final String insertTelefonos = "INSERT INTO `bd_banco`.`telefonos` (telefono1, telefono2, id_cliente) VALUES (?, ?, ?)";
     private static final String listarIdClientes = "SELECT id_cliente FROM bd_banco.clientes";
+    private static final String checkDniQuery = "SELECT dni, id_cliente FROM Clientes WHERE dni = ?;";
 
 
 	
-    
-    
-    
-    
     
     public int ModificacionTelefonos(String telefonoModificado1, String telefonoModificado2, int id_cliente) {
 
@@ -187,6 +184,7 @@ public class ClienteDao implements iClienteDao{
 
     @Override
 	public int agregarCliente(Cliente clienteNuevo) {
+    	
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
@@ -196,11 +194,6 @@ public class ClienteDao implements iClienteDao{
 		Provincia provincia = new Provincia();
 		ProvinciaDao pDao = new ProvinciaDao();
 		provincia = pDao.getProvinciaConId(clienteNuevo.getProvincia().getId_provincia());
-		
-		
-		Localidad localidad = new Localidad();
-		LocalidadDao lDao = new LocalidadDao();
-		localidad = lDao.getLocalidadConId(clienteNuevo.getLocalidad().getIdLocalidad());
 		
 		
 		Connection conexion = null;
@@ -228,7 +221,7 @@ public class ClienteDao implements iClienteDao{
 			statement.setInt(6, clienteNuevo.getNacionalidad().getIdPais());
 			statement.setDate(7, fechaSql);
 			statement.setString(8, clienteNuevo.getDireccion());
-			statement.setInt(9, localidad.getIdLocalidad());
+			statement.setInt(9, clienteNuevo.getLocalidad().getId());
 			statement.setInt(10, provincia.getId_provincia());
 			statement.setString(11, clienteNuevo.getCorreoElectronico());
 			statement.setString(12, clienteNuevo.getEstado().name());
@@ -282,6 +275,7 @@ public class ClienteDao implements iClienteDao{
 			}
 		}
 		return filas;
+		
 	}
 
 
@@ -331,16 +325,18 @@ public class ClienteDao implements iClienteDao{
 		Cliente cliente = null;
 		Telefono tel1 = new Telefono();
 		Telefono tel2 = new Telefono();
-		
 		ProvinciaDao pDao = new ProvinciaDao();
 	    Pais pais = new Pais();
+		PaisDao paisDao = new PaisDao();	    
+		LocalidadDao locDao = new LocalidadDao();
+		Localidad localidad = new Localidad();
 		
-	    PaisDao paisDao = new PaisDao();	     
 		
-		LocalidadDao lDao = new LocalidadDao();
 		
 		
 		try {
+			localidad = locDao.LocalidadPorId(resultSet.getInt("localidad"));
+			
 			cliente = new Cliente();
 			cliente.setId(resultSet.getInt("id_cliente"));
 			cliente.setDni(resultSet.getString("dni"));
@@ -351,7 +347,7 @@ public class ClienteDao implements iClienteDao{
 			pais.setNombre(resultSet.getString("nacionalidad"));
 			cliente.setFechaNacimiento(resultSet.getDate("fecha_nacimiento"));
 			cliente.setDireccion(resultSet.getString("direccion"));
-			cliente.setLocalidad( lDao.getLocalidadConId(resultSet.getInt("localidad")) );
+			cliente.setLocalidad(localidad);
 			cliente.setProvincia(pDao.getProvinciaConId(resultSet.getInt("provincia")));
 			cliente.setNacionalidad(paisDao.getPaisConId(resultSet.getInt("nacionalidad")));
 			cliente.setCorreoElectronico(resultSet.getString("correo_electronico"));
@@ -523,17 +519,6 @@ public class ClienteDao implements iClienteDao{
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	@Override
 	public int BajaLogicaCliente(int idClienteBaja) {
 	
 	    try {
@@ -587,7 +572,6 @@ public class ClienteDao implements iClienteDao{
 	    }
 	
 	    ProvinciaDao pDao = new ProvinciaDao();
-	    LocalidadDao lDao = new LocalidadDao();
 	    Connection conexion = null;
 	    PreparedStatement statement = null;
 	    int filas = 0;
@@ -608,7 +592,7 @@ public class ClienteDao implements iClienteDao{
 			statement.setInt(6, clienteModificar.getNacionalidad().getIdPais());
 			statement.setDate(7, fechaSql);
 			statement.setString(8, clienteModificar.getDireccion());
-			statement.setInt(9, clienteModificar.getLocalidad().getIdLocalidad());
+			statement.setInt(9, clienteModificar.getLocalidad().getId());
 			statement.setInt(10, clienteModificar.getProvincia().getId_provincia());
 			statement.setString(11, clienteModificar.getCorreoElectronico());
 			statement.setString(12, clienteModificar.getEstado().name());
@@ -734,6 +718,65 @@ public class ClienteDao implements iClienteDao{
 	        }
 	    }
 	    return listaIdClientes;
+	}
+	
+	
+	public boolean existeDni(String dni) {
+	    boolean exists = false;
+	    Connection conexion = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+
+	    try {
+	        Class.forName("com.mysql.jdbc.Driver");
+	        conexion = conexionDB.getConnection();
+	        ps = conexion.prepareStatement(checkDniQuery);
+	        ps.setString(1, dni);
+	        rs = ps.executeQuery();
+	        exists = rs.next();
+	        
+	        
+	        rs.getInt("id_cliente");
+	        rs.getString("dni");
+	        
+	    } catch (SQLException | ClassNotFoundException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try { if (rs != null) rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+	        try { if (ps != null) ps.close(); } catch (SQLException e) { e.printStackTrace(); }
+	        try { if (conexion != null) conexion.close(); } catch (SQLException e) { e.printStackTrace(); }
+	    }
+
+	    return exists;
+	}
+	
+	public boolean existeDni(String dni, int id_modificar) {
+	    boolean exists = false;
+	    Connection conexion = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+
+	    try {
+	        Class.forName("com.mysql.jdbc.Driver");
+	        conexion = conexionDB.getConnection();
+	        ps = conexion.prepareStatement(checkDniQuery);
+	        ps.setString(1, dni);
+	        rs = ps.executeQuery();
+	        exists = rs.next();
+	        
+	        if(rs.getInt("id_cliente") == id_modificar){
+	        	exists = false;
+	        }
+	        
+	    } catch (SQLException | ClassNotFoundException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try { if (rs != null) rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+	        try { if (ps != null) ps.close(); } catch (SQLException e) { e.printStackTrace(); }
+	        try { if (conexion != null) conexion.close(); } catch (SQLException e) { e.printStackTrace(); }
+	    }
+
+	    return exists;
 	}
 	
 }

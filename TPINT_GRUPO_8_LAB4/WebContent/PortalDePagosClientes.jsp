@@ -40,17 +40,18 @@
 	        </div>
 	
 	        <div class="info-section">
-	            <h2>Pago para el Prestamo: <%= request.getAttribute("idPrestamo") %> </h2>
+	            <h2> Pago para el Prestamo: <%= request.getAttribute("idPrestamo") %> </h2>
 	            
 	            <table>
 	        <thead>
 	            <tr>
-	                <th>ID</th>
-	                <th>Fecha</th>
-	                <th>Importe</th>
-	                <th>Fecha de Vencimiento</th>
-	                <th>ID Prestamo Vinculado</th>
-	                <th>ID Cuenta afectada</th>
+	                <th> ID </th>
+	                <th> Fecha </th>
+	                <th> Importe </th>
+	                <th> Fecha de Vencimiento </th>
+	                <th> ID Prestamo Vinculado </th>
+	                <th> ID Cuenta afectada </th>
+	                <th> Opciones </th>
 	                
 	            </tr>
 	        </thead>
@@ -69,11 +70,30 @@
 	                    <td><%= pago.getIdPrestamo() %></td>
 	                    <td><%= pago.getIdCuenta() %></td>
 	                    
+	                    <% if(pago.getEstado() == Pago.ESTADO.ATiempo) { %>
+	                    
 					    <td class"action-buttons" >
 					    <div style="display:flex">
-				            <input type="submit" value="Efectuar Pago (deco?)" />
+				            <form action="PortalPagosBancoServlet" method="get">
+				            	<input type="hidden" value="<%= pago.getId() %>" name="idPagoReferido" />
+				            	<input type="hidden" value="<%= request.getAttribute("idPrestamo") %>" name="idPrestamo" />
+				            	<input type="submit" value="Efectuar Pago" id="btnEfectuarPago" name="btnEfectuarPago" />
+							</form>
 					    </div>
 					    </td>
+					    
+					   <% }if (pago.getEstado() == Pago.ESTADO.Pagado) {%>
+					   
+       					<td class"action-buttons" >
+						    <div style="display:flex">
+				               	<form action="PortalPagosBancoServlet" method="get">
+						            <input type="submit" name="btnVerMovimientos" value="Ver Movimiento" />
+						        </form>
+							</div>
+					    </td>
+				       
+				     <%}%> 
+       
 					</tr>	
 				<% }
 	            			

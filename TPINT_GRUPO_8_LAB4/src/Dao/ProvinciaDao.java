@@ -17,7 +17,6 @@ public class ProvinciaDao implements iProvinciaDao {
 	public ProvinciaDao() {
 	}
 
-	@Override
 	public Provincia getProvinciaConId(int id_provincia) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");

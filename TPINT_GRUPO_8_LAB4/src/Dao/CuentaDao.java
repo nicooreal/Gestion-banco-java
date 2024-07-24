@@ -11,6 +11,7 @@ import java.util.List;
 
 import Dominio.Cliente;
 import Dominio.Cuenta;
+import Dominio.Movimiento;
 import Dominio.TiposCuenta;
 import Dominio.Usuario;
 
@@ -28,7 +29,7 @@ public class CuentaDao implements iCuentaDao{
 	private static final String ultimoNumCuentaIngresado = "SELECT numero_cuenta FROM bd_banco.cuentas ORDER BY id_cuenta DESC LIMIT 1";
 	private static final String traerUltimoCbu = "SELECT CBU FROM bd_banco.cuentas ORDER BY id_cuenta DESC LIMIT 1";
 	
-	private static final String cantidadCuentasPorCliente = "SELECT COUNT(*) FROM `bd_banco`.`cuentas` where id_cliente = ?";
+	private static final String cantidadCuentasPorCliente = "SELECT COUNT(*) FROM `bd_banco`.`cuentas` where id_cliente = ? AND estado = 'True'";
 	
 	
 	//se modifica el saldo 
@@ -342,11 +343,6 @@ public class CuentaDao implements iCuentaDao{
 	
 	
 	
-	
-	
-	
-	
-	
 	public int agregarCuenta(Cuenta cuentaNueva) {
 		Cliente cliente = new Cliente();
 		ClienteDao clDao = new ClienteDao();
@@ -356,6 +352,7 @@ public class CuentaDao implements iCuentaDao{
 		int filas = 0;
 		int maximoCuentasPorCliente = 3;
 		int cuentasActuales = cuentasDelCliente(cuentaNueva.getCliente().getId());
+		float saldo_inicial = 10000;
 	    
 		if(cuentasActuales < maximoCuentasPorCliente && cliente != null){
 			try {
@@ -366,6 +363,8 @@ public class CuentaDao implements iCuentaDao{
 			
 			Connection conexion = null;
 			PreparedStatement statement;
+			ResultSet resultSet = null;
+			int id_cuenta = 0;
 			
 			try
 			{
@@ -381,12 +380,23 @@ public class CuentaDao implements iCuentaDao{
 				statement.setLong(4,  cuentaNueva.getNumeroCuenta());
 				
 				statement.setString(5, cuentaNueva.getCbu());
-				statement.setFloat(6, 10000);
+				statement.setFloat(6, saldo_inicial);
 				statement.setString(7, cuentaNueva.getEstado().name());
 				if(statement.executeUpdate() > 0)
 				{
 					filas = 1;
-					System.out.println("La cuenta fue registrada correctamente en estado Inactivo...");
+					System.out.println("La cuenta se creo en la base de datos... generando Monto de ingreso...");
+					resultSet = statement.getGeneratedKeys();
+					if (resultSet.next()) {
+						id_cuenta = resultSet.getInt(1);
+					}
+					MovimientoDao movDao = new MovimientoDao();
+					String concepto = "SALDO INICIAL";
+					int id_tipo_mov = 1;
+					int origen = 1;
+					if(movDao.agregarIngresoInicialAMovimiento(sqlDate, concepto, saldo_inicial, id_tipo_mov, origen, id_cuenta)>0) {
+						System.out.println("Activar cuenta, ya se encuentra disponible...");
+					}
 				}
 			} 
 			catch (SQLException e) 
@@ -706,17 +716,40 @@ public class CuentaDao implements iCuentaDao{
 	}
 	
 	
-	public void realizarTransferencia(String cbuOrigen, String cbuDestino, double monto) throws SQLException {
+	public void realizarTransferencia(String cbuOrigen, String cbuDestino, float monto) throws SQLException {
 	    Connection conexion = null;
 	    java.sql.CallableStatement cstmt = null;
 
 	    try {
 	        conexion = conexionDB.getConnection();
-	        cstmt = conexion.prepareCall("{CALL TransferirDinero(?, ?, ?)}");
+	        cstmt = conexion.prepareCall("{CALL TransferirDinero(?, ?, ?, ?, ?)}"); //se agregan dos output del SP en SQL (por que no se pasan parametros de id de cuenta con el cbu.... parche)
 	        cstmt.setString(1, cbuOrigen);
 	        cstmt.setString(2, cbuDestino);
 	        cstmt.setDouble(3, monto);
+	        cstmt.registerOutParameter(4, java.sql.Types.INTEGER);
+	        cstmt.registerOutParameter(5, java.sql.Types.INTEGER);
+	        
 	        cstmt.executeUpdate();
+	        
+	        int idCuentaOrigen = cstmt.getInt(4);
+	        int idCuentaDestino = cstmt.getInt(5);
+	        
+	        if(idCuentaOrigen > 1) {
+	        	MovimientoDao movDao = new MovimientoDao();
+	        	//debito primero el movimiento
+	        	float montoNegativo = monto*-1;
+	        	if(movDao.agregarTransferenciaAMovimiento("TRANSFERENCIA (EGRESO)", montoNegativo, idCuentaDestino, idCuentaOrigen)>0) {
+	        		System.out.println("SE DESCONTO EL DINERO EN LA CUENTA " + idCuentaOrigen);
+	        	}
+
+	        	//ingreso el movimiento a favor
+	        	if(movDao.agregarTransferenciaAMovimiento("INGRESO DE TRANSFERENCIA", monto, idCuentaOrigen, idCuentaDestino)>0) {
+	        		System.out.println("SE ADICIONÓ EL DINERO EN LA CUENTA " + idCuentaDestino);
+	        	}
+	        }
+	        
+	        
+	        
 	    } finally {
 	        if (cstmt != null) cstmt.close();
 	        if (conexion != null) conexion.close();

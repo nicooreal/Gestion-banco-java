@@ -130,7 +130,7 @@
 	                    <td><%= cliente.getNacionalidad().getNombre()%></td>
 	                    <td><%= cliente.getFechaNacimiento().toString()%></td>
 	                    <td><%= cliente.getDireccion()%></td>
-	                    <td><%= cliente.getLocalidad().getLocalidad()%></td>
+	                    <td><%= cliente.getLocalidad().getNombre() %></td>
 	                    <td><%= cliente.getProvincia().getNombre_provincia() %></td>
 	                    <td><%= cliente.getCorreoElectronico()%></td>
 	                    <td><%= cliente.getEstado()%></td>

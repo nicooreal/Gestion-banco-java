@@ -1,6 +1,7 @@
 package servlets;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -10,6 +11,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
 
 import Dominio.Cliente;
 import Dominio.Localidad;
@@ -42,12 +45,16 @@ public class adminClientesServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	
+
        if (request.getParameter("botonMostrarEliminados")!=null) {
             mostrarClientesEliminados(request, response);
        } else if (request.getParameter("botonMostrarActivados")!=null) {
     	   mostrarClientesActivados(request, response);
-       } else if (request.getParameter("botonAgregar")!=null) {
+    	   
+       }else if(request.getParameter("ListarLocalidades")!=null) {
+    	   listarLocalidadSegunProvincia (request, response);
+       }
+       else if (request.getParameter("botonAgregar")!=null) {
         	mostrarFormularioAgregar(request, response);
         }else if (request.getParameter("btnModificar")!=null) {
         	mostrarFormularioModificar(request, response);
@@ -117,71 +124,71 @@ public class adminClientesServlet extends HttpServlet {
     
     
     private void agregarCliente(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	
-        int filasAgregadas = 0;
-
-        // Validación de campos
-        if (validarCamposCliente(request)) {
-            // Procesamiento para agregar cliente
-            java.util.Date dateNacimiento = null;
-            SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy-MM-dd");
-            try {
-                dateNacimiento = formatoFecha.parse(request.getParameter("fechaNacimiento"));
-            } catch (ParseException e) {
-                e.printStackTrace();
+    	ClienteDao cd = new ClienteDao();
+    	int filasAgregadas = 0;
+	        
+	        // Validación de campos
+	        if (validarCamposCliente(request) && !cd.existeDni(request.getParameter("dni"))) {
+	            // Procesamiento para agregar cliente
+	            java.util.Date dateNacimiento = null;
+	            SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy-MM-dd");
+	            try {
+	                dateNacimiento = formatoFecha.parse(request.getParameter("fechaNacimiento"));
+	            } catch (ParseException e) {
+	                e.printStackTrace();
+	            }
+	            
+	            ProvinciaDao proDao = new ProvinciaDao();
+	            Provincia provincia = new Provincia();
+	            provincia = proDao.getProvinciaConId(Integer.parseInt(request.getParameter("provincia")));
+	            
+	            LocalidadDao locDao = new LocalidadDao();
+	            Localidad loc = new Localidad();
+	            loc = locDao.LocalidadPorId(Integer.parseInt(request.getParameter("localidad")));
+	
+	            
+	            PaisDao paisDao = new PaisDao();
+	            Pais pais = new Pais();
+	            int idPais = Integer.parseInt(request.getParameter("nacionalidad"));
+	            
+	            
+	            pais = paisDao.getPaisConId(idPais);
+	            
+	            
+	           // int idPaisInt = pais.getIdPais();
+	           //String idPaisString = String.valueOf(idPaisInt);
+	            
+	            
+	            Cliente cliente = new Cliente();
+	            
+	            Telefono telefono1 = new Telefono(request.getParameter("telefono1"));
+	            Telefono telefono2 = new Telefono(request.getParameter("telefono2"));
+	            
+	            
+	            cliente.setDni(request.getParameter("dni"));
+	            cliente.setCuil(request.getParameter("cuil"));
+	            cliente.setNombre(request.getParameter("nombre"));
+	            cliente.setApellido(request.getParameter("apellido"));
+	            cliente.setSexo(request.getParameter("sexo"));
+	            cliente.setFechaNacimiento(dateNacimiento);
+	            cliente.setNacionalidad(pais);
+	            cliente.setDireccion(request.getParameter("direccion"));
+	            cliente.setLocalidad(loc);
+	            cliente.setProvincia(provincia);
+	            cliente.setCorreoElectronico(request.getParameter("email"));
+	            cliente.setEstado("True");
+	          
+	            cliente.setTelefono1(telefono1);
+	            cliente.setTelefono2(telefono2);
+	            
+	            filasAgregadas = cd.agregarCliente(cliente);
+	            // Redireccionamiento a la lista de clientes después de agregar
+	            mostrarClientes(request, response);
+            }else {
+            	 System.out.println("existeDNI TRUE");
+                 RequestDispatcher rd = request.getRequestDispatcher("/DniDuplicadoError.jsp");
+                 rd.forward(request, response);
             }
-            
-            ProvinciaDao proDao = new ProvinciaDao();
-            Provincia provincia = new Provincia();
-            provincia = proDao.getProvinciaConId(Integer.parseInt(request.getParameter("provincia")));
-
-            
-            PaisDao paisDao = new PaisDao();
-            Pais pais = new Pais();
-            int idPais = Integer.parseInt(request.getParameter("nacionalidad"));
-          
-            
-            pais = paisDao.getPaisConId(idPais);
-            
-            
-            LocalidadDao localidadDao = new LocalidadDao();
-            Localidad localidad = new Localidad();
-            localidad = localidadDao.getLocalidadConId(Integer.parseInt(request.getParameter("localidad")));
-            
-            
-            Cliente cliente = new Cliente();
-            
-            Telefono telefono1 = new Telefono(request.getParameter("telefono1"));
-            Telefono telefono2 = new Telefono(request.getParameter("telefono2"));
-            
-            
-            cliente.setDni(request.getParameter("dni"));
-            cliente.setCuil(request.getParameter("cuil"));
-            cliente.setNombre(request.getParameter("nombre"));
-            cliente.setApellido(request.getParameter("apellido"));
-            cliente.setSexo(request.getParameter("sexo"));
-            cliente.setFechaNacimiento(dateNacimiento);
-            cliente.setNacionalidad(pais);
-            cliente.setDireccion(request.getParameter("direccion"));
-            cliente.setLocalidad(localidad);
-            cliente.setProvincia(provincia);
-            cliente.setCorreoElectronico(request.getParameter("email"));
-            cliente.setEstado("True");
-          
-            cliente.setTelefono1(telefono1);
-            cliente.setTelefono2(telefono2);
-            
-            ClienteDao cd = new ClienteDao();
-            filasAgregadas = cd.agregarCliente(cliente);
-            
-            
-        } else {
-            // Manejo de error: campos incompletos o inválidos
-            // Podrías redirigir a un JSP de error o mostrar un mensaje adecuado
-        }
-
-        // Redireccionamiento a la lista de clientes después de agregar
-        mostrarClientes(request, response);
     }
 
     private void eliminarCliente(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -198,9 +205,9 @@ public class adminClientesServlet extends HttpServlet {
 
     private void modificarCliente(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int idParaModificar = Integer.parseInt(request.getParameter("idModificar"));
-
+        ClienteDao cd = new ClienteDao();
        //  Validación de campos
-    //    if (validarCamposCliente(request)) {
+        if (validarCamposCliente(request) && !cd.existeDni(request.getParameter("dni"), idParaModificar)) {
             // Procesamiento para modificar cliente
             java.util.Date dateNacimiento = null;
             SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy-MM-dd");
@@ -214,16 +221,18 @@ public class adminClientesServlet extends HttpServlet {
             Provincia provincia = new Provincia();
             provincia = proDao.getProvinciaConId(Integer.parseInt(request.getParameter("provincia")));
 
+            LocalidadDao locDao = new LocalidadDao();
+            Localidad loc = new Localidad();
+            loc = locDao.LocalidadPorId(Integer.parseInt(request.getParameter("localidad")));
+            
             PaisDao paisDao = new PaisDao();            
             Pais pais = new Pais();
             pais = paisDao.getPaisConId(Integer.parseInt(request.getParameter("nacionalidad")));
             
             
-          LocalidadDao localidadDao = new LocalidadDao();
-          Localidad localidad = new Localidad();
-          localidad = localidadDao.getLocalidadConId(Integer.parseInt(request.getParameter("localidad")));
-          
-          
+          //  pais.setIdPais(request.getParameter("nacionalidad"));
+            
+            
             Cliente cliente = new Cliente();
             cliente.setDni(request.getParameter("dni"));
             cliente.setCuil(request.getParameter("cuil"));
@@ -233,28 +242,29 @@ public class adminClientesServlet extends HttpServlet {
             cliente.setFechaNacimiento(dateNacimiento);
             cliente.setNacionalidad(pais);
             cliente.setDireccion(request.getParameter("direccion"));
-            cliente.setLocalidad(localidad);
+            cliente.setLocalidad(loc);
             cliente.setProvincia(provincia);
             cliente.setCorreoElectronico(request.getParameter("email"));
             cliente.setEstado("True");
             cliente.setId(idParaModificar);
 
-            ClienteDao cd = new ClienteDao();
+            
             cd.ModificacionCliente(cliente);
    
             
-                     if(cd.ModificacionTelefonos(request.getParameter("telefono1"), request.getParameter("telefono2"), idParaModificar) > 0) {
+            if(cd.ModificacionTelefonos(request.getParameter("telefono1"), request.getParameter("telefono2"), idParaModificar) > 0) {
                 System.out.println("Telefono modificado ok");
             }   
             
+            mostrarClientes(request, response);
             
-            //     } else {
-            // Manejo de error: campos incompletos o inválidos
-            // Podrías redirigir a un JSP de error o mostrar un mensaje adecuado
-    //   }
+            } else {
+                RequestDispatcher rd = request.getRequestDispatcher("/DniDuplicadoError.jsp");
+                rd.forward(request, response);
+       }
 
-        // Redireccionamiento a la lista de clientes después de modificar
-        mostrarClientes(request, response);
+        //Redireccionamiento a la lista de clientes después de modificar
+        
     }
 
     private void activarCliente(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -274,29 +284,38 @@ public class adminClientesServlet extends HttpServlet {
         ProvinciaDao pDao = new ProvinciaDao();
         ArrayList<Provincia> listadoProvincias = pDao.getListaProvincias();
         request.setAttribute("listadoProvincias", listadoProvincias);
-      //  RequestDispatcher rd = request.getRequestDispatcher("/adminCrearCliente.jsp");
-       // rd.forward(request, response);
-    
-    
+        
         PaisDao paisDao = new PaisDao();
         ArrayList<Pais> listadoPais = paisDao.getListaPaises();
         request.setAttribute("listadoPaises", listadoPais);
        
-        
-        LocalidadDao localidadDao = new LocalidadDao();
-        ArrayList<Localidad> listadoLocalidad = localidadDao.getListaLocalidades();
-        request.setAttribute("listadoLocalidades", listadoLocalidad);
-       
-        
-        
         RequestDispatcher rd = request.getRequestDispatcher("/adminCrearCliente.jsp");
         rd.forward(request, response);
-    
-    
-    
-    
-    
+        
     }
+    
+    
+    
+    private void listarLocalidadSegunProvincia (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	
+    	String provinciaIdStr = request.getParameter("provinciaId");
+        if (provinciaIdStr != null) {
+            int provinciaId = Integer.parseInt(provinciaIdStr);
+            LocalidadDao locDao = new LocalidadDao();
+            ArrayList<Localidad> listadoLocalidades = locDao.listarLocalidadesPorProvincia(provinciaId);
+
+            // Configura la respuesta como JSON
+            response.setContentType("application/json");
+            PrintWriter out = response.getWriter();
+            Gson gson = new Gson();
+            String json = gson.toJson(listadoLocalidades);
+            out.print(json);
+            out.flush();
+        }
+        
+    }
+    
+    
     
     private void mostrarFormularioModificar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	//listo provincias primero
@@ -309,11 +328,7 @@ public class adminClientesServlet extends HttpServlet {
         request.setAttribute("listadoPaises", listadoPais);
       //   
          
-       LocalidadDao localidadDao = new LocalidadDao();         
-       ArrayList<Localidad> listadoLocalidad = localidadDao.getListaLocalidades() ;
-       request.setAttribute("listadoLocalidades", listadoLocalidad);
-        
-        
+         
          request.setAttribute("clienteId", Integer.parseInt(request.getParameter("clienteId")));
          
          RequestDispatcher rd = request.getRequestDispatcher("/adminCrearCliente.jsp");

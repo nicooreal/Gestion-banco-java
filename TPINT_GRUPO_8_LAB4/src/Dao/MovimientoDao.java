@@ -11,17 +11,94 @@ import java.util.ArrayList;
 import Dominio.Cliente;
 import Dominio.Cuenta;
 import Dominio.Movimiento;
+import Dominio.Pago;
 import Dominio.Prestamo;
 import Dominio.Usuario;
 
 public class MovimientoDao implements iMovimientoDao {
 
 	private static final String selectAll = "SELECT * FROM cuentas";
-	private static final String movimientoPorCuenta = "SELECT * FROM `bd_banco`.`movimientos` WHERE id_cuenta_origen = ? OR id_cuenta_destino = ?";   
+	
+	//se lista por cuenta DESTINO unicamente. sino aparece doble movimiento en caso de las transferencias. por el negativo y positivo de la otra cuenta
+	private static final String movimientoPorCuenta = "SELECT * FROM `bd_banco`.`movimientos` WHERE id_cuenta_destino = ?";   
 	
 	private static final String insertMovimientoDesdePrestamo = "INSERT INTO `bd_banco`.`movimientos`(fecha, concepto, importe, id_tipo_movimiento, id_cuenta_origen, id_cuenta_destino) VALUES(?, ?, ?, ?, ?, ?)";
 			
 			
+	
+	
+	public int agregarPagoEfectuadoAMovimiento(Pago pagoReferido) {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		CuentaDao cDao = new CuentaDao();
+		Cuenta cuentaDebitada = new Cuenta();
+		
+		cuentaDebitada = cDao.buscar_con_id(pagoReferido.getIdCuenta());
+		
+		Connection conexion = null;
+		PreparedStatement statement;
+		int filas = 0;
+		String concepto = "PAGO";
+		int idTipoMovimiento = 2;
+		int idCuentaBanco = 1;
+		float montoNuevo = cuentaDebitada.getSaldo() - pagoReferido.getImporteApagar();
+		if(montoNuevo > 0) {
+			try
+			{
+				conexion = conexionDB.getConnection();
+				
+				java.util.Date utilDate = new java.util.Date();
+			    java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+				
+				statement = conexion.prepareStatement(insertMovimientoDesdePrestamo);
+				statement.setDate(1, sqlDate);
+				statement.setString(2, concepto);
+				statement.setFloat(3, pagoReferido.getImporteApagar());
+				statement.setInt(4, idTipoMovimiento);
+				statement.setInt(5, idCuentaBanco);
+				statement.setInt(6, pagoReferido.getIdCuenta());
+
+				filas = statement.executeUpdate();
+				
+				if(filas > 0)
+				{
+					System.out.println("PAGO registrado como movimiento bancario correctamente.");
+					if(cDao.modificarMontoACuenta(montoNuevo, pagoReferido.getIdCuenta()) > 0) {
+						System.out.println("PAGO efectuado sobre la cuenta de banco y debitado de la cuenta: "+ pagoReferido.getIdCuenta());
+					}
+				}
+			} 
+			catch (SQLException e) 
+			{
+				e.printStackTrace();
+				try {
+					conexion.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+			finally {
+				if(conexion != null)
+				{
+					try 
+					{
+						conexion.close();
+					}
+					catch (SQLException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+		}else {
+			System.out.println("SALDO INSUFICIENTE PARA EFECTUAR EL PAGO");
+		}
+		return filas;
+	}
 			
 
 	public int agregarPrestamoAMovimiento(Prestamo prestamoAprobado) {
@@ -96,6 +173,128 @@ public class MovimientoDao implements iMovimientoDao {
 	}
 	
 	
+	public int agregarIngresoInicialAMovimiento(Date sqlDate, String concepto, float saldo_inicial, int id_tipo_mov, int origen, int id_cuenta_generado) {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		
+		Connection conexion = null;
+		PreparedStatement statement;
+		int filas = 0;
+		
+		try
+		{
+			conexion = conexionDB.getConnection();
+			
+			statement = conexion.prepareStatement(insertMovimientoDesdePrestamo);
+			statement.setDate(1, sqlDate);
+			statement.setString(2, concepto);
+			statement.setFloat(3, saldo_inicial);
+			statement.setInt(4, id_tipo_mov);
+			statement.setInt(5, origen);
+			statement.setInt(6, id_cuenta_generado);
+
+			filas = statement.executeUpdate();
+			
+			if(filas > 0)
+			{
+				System.out.println("Creacion de cuenta: Movimiento de dinero de $10000 inicial creado exitosamente");
+			}
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+			try {
+				conexion.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
+		finally {
+			if(conexion != null)
+			{
+				try 
+				{
+					conexion.close();
+				}
+				catch (SQLException e) 
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		return filas;
+	}
+	
+	public int agregarTransferenciaAMovimiento(String concepto, float importe_a_transferir, int origen, int id_cuenta_generado) {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		//si es negativo es egreso de dinero
+		int id_tipo_mov =0;
+		if(importe_a_transferir>0) {
+			id_tipo_mov = 1;
+		}else {
+			id_tipo_mov = 2;
+		}
+		
+		Connection conexion = null;
+		PreparedStatement statement;
+		int filas = 0;
+		
+		try
+		{
+			java.util.Date utilDate = new java.util.Date();
+		    java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+			conexion = conexionDB.getConnection();
+			
+			statement = conexion.prepareStatement(insertMovimientoDesdePrestamo);
+			statement.setDate(1, sqlDate);
+			statement.setString(2, concepto);
+			statement.setFloat(3, importe_a_transferir);
+			statement.setInt(4, id_tipo_mov);
+			statement.setInt(5, origen);
+			statement.setInt(6, id_cuenta_generado);
+
+			filas = statement.executeUpdate();
+			
+			if(filas > 0)
+			{
+				System.out.println("Transferencia Exitosa (añadida al registro movimientos)");
+			}
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+			try {
+				conexion.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
+		finally {
+			if(conexion != null)
+			{
+				try 
+				{
+					conexion.close();
+				}
+				catch (SQLException e) 
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		return filas;
+	}
+	
+	
 	public ArrayList<Movimiento> ListarMovimientosPorCuenta(int id_cuenta) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -110,7 +309,6 @@ public class MovimientoDao implements iMovimientoDao {
 			conexion = conexionDB.getConnection();
 			statement = conexion.prepareStatement(movimientoPorCuenta);
 			statement.setInt(1, id_cuenta);
-			statement.setInt(2, id_cuenta);
 			resultSet = statement.executeQuery();
 			while(resultSet.next()) {
 				listadoMovimiento.add(getMovimiento(resultSet));

@@ -163,7 +163,7 @@ public class Cliente {
 	public String toString() {
 		return "Cliente [id=" + id + ", dni=" + dni + ", cuil=" + cuil + ", nombre=" + nombre + ", apellido=" + apellido
 				+ ", sexo=" + sexo + ", nacionalidad=" + nacionalidad + ", fechaNacimiento=" + fechaNacimiento
-				+ ", direccion=" + direccion + ", localidad=" + localidad + ", provincia=" + provincia
+				+ ", direccion=" + direccion + ", localidad=" + localidad.getNombre() + ", provincia=" + provincia
 				+ ", correoElectronico=" + correoElectronico + ", telefono1=" + telefono1 + ", telefono2=" + telefono2
 				+ ", cuentas=" + cuentas + ", estado=" + estado + "]";
 	}

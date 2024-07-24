@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import Dominio.Cuenta;
 import Dominio.Pago;
 import Dominio.Prestamo;
 
@@ -20,7 +21,6 @@ public class PagoDao {
 	private static final String updateEstadoPagado = "UPDATE pagos SET estado = 'Pagado' WHERE id = ?";
 	private static final String updateEstadoVencido = "UPDATE pagos SET estado = 'Vencido' WHERE id = ?";
 	private static final String insertPago = "INSERT INTO pagos (fecha , importe, fecha_vencimiento, id_prestamo, id_cuenta, ESTADO) VALUES (?, ?, ?, ?, ?, ?)";
-	
 	private static final String selectWhereIdCliente = "SELECT * FROM pagos WHERE id_cliente = ?";
 	private static final String selectWhereIdCuenta = "SELECT * FROM pagos WHERE id_cuenta = ?";
 	
@@ -94,6 +94,9 @@ public class PagoDao {
 		}
 		return filas;
 	}*/
+	
+	
+	
 	
 	//agrega el registro para pagar luego
 	public int agregarPagoABase(Prestamo prestamoNuevo) {
@@ -207,6 +210,44 @@ public class PagoDao {
 	}
 	
 	
+	public Pago buscarPorId(int id_pago) {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		Connection conexion = null;
+		PreparedStatement statement;
+		ResultSet resultSet;
+		Pago pago = new Pago();
+		try {
+			conexion = conexionDB.getConnection();
+			statement = conexion.prepareStatement(selectPagoPorId);
+			statement.setInt(1, id_pago);
+			resultSet = statement.executeQuery();
+			resultSet.next();
+			pago = getPago(resultSet);
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		}
+		finally {
+			if(conexion != null)
+			{
+				try 
+				{
+					conexion.close();
+				}
+				catch (SQLException e) 
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		return pago;
+	}
+	
+	
 	private Pago getPago(ResultSet resultSet) {
 		
 		Pago pago = new Pago();
@@ -226,6 +267,52 @@ public class PagoDao {
 		
 		return pago;
 	}
+
+
+
+	public int estadoPagoAPagado(int id_Modificar) {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		}catch(ClassNotFoundException e) {
+	        e.printStackTrace();
+		}
+		
+	    Connection conexion = null;
+	    PreparedStatement statement = null;
+	    int filas = 0;
+	
+	    try {
+	    	conexion = conexionDB.getConnection();
+	        statement = conexion.prepareStatement(updateEstadoPagado);
+			statement.setInt(1, id_Modificar);
+     	    
+	        filas = statement.executeUpdate();
+	        
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        
+	    } finally {
+	    
+	        if (statement != null) {
+	            try {
+	                statement.close();
+	            } catch (SQLException e) {
+	                e.printStackTrace();
+	            }
+	        }
+	
+	        if (conexion != null) {
+	            try {
+	                conexion.close();
+	            } catch (SQLException e) {
+	                e.printStackTrace();
+	            }
+	        }
+	    }
+	return filas;	
+		
+	}
+	
 	
 	
 }

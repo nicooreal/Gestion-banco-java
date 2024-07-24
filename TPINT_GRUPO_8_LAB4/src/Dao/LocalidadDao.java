@@ -7,129 +7,80 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import Dominio.Localidad;
-import Dominio.Pais;
 
 public class LocalidadDao {
+	
+	
+	private static final String ListarLocalidades = "SELECT * FROM localidades WHERE id_provincia = ?";
+	private static final String ObtenerLocalidadPorId = "SELECT * FROM localidades WHERE id_localidad = ?";
+	
+	
+	// Método para listar localidades por provincia
+    public ArrayList<Localidad> listarLocalidadesPorProvincia(int idProvincia) {
+        ArrayList<Localidad> localidades = new ArrayList<>();
+        Connection conexion = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
 
-	
-	private static final String selectLocalidad = "SELECT * FROM localidades WHERE id_localidad = ?";
-	private static final String selectAllLocalidad = "SELECT * FROM localidades";
+        try {
+            conexion = conexionDB.getConnection(); // Asegúrate de tener la clase conexionDB que maneje la conexión a la base de datos
+            pstmt = conexion.prepareStatement(ListarLocalidades);
+            pstmt.setInt(1, idProvincia);
+            rs = pstmt.executeQuery();
 
-	
+            while (rs.next()) {
+                int id = rs.getInt("id_localidad");
+                String nombre = rs.getString("localidad");
+                int provinciaId = rs.getInt("id_provincia");
+                Localidad localidad = new Localidad(id, nombre, provinciaId);
+                localidades.add(localidad);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+                if (conexion != null) conexion.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
 
+        return localidades;
+    }
 
-	
-	public Localidad getLocalidadConId(int id_localidad) {
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-		Connection conexion = null;
-		PreparedStatement statement;
-		ResultSet resultSet;
-	Localidad localidad = new Localidad();
-		
-		try {
-			conexion = conexionDB.getConnection();
-			statement = conexion.prepareStatement(selectLocalidad);
-			statement.setInt(1,id_localidad);
-			resultSet = statement.executeQuery();
-			resultSet.next();
-			localidad.setIdLocalidad ((resultSet.getInt("id_localidad")));
-			localidad.setLocalidad((resultSet.getString("localidad")));		
-		}
-		
-		catch(SQLException e){
-			e.printStackTrace();
-		}
-		
-		finally {
-			if(conexion != null)
-			{
-				try 
-				{
-					conexion.close();
-				}
-				catch (SQLException e) 
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-		
-		return localidad;
-	}
+    // Método para obtener una localidad por su ID
+    public Localidad LocalidadPorId(int id) {
+        Localidad localidad = null;
+        Connection conexion = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
 
+        try {
+            conexion = conexionDB.getConnection();
+            pstmt = conexion.prepareStatement(ObtenerLocalidadPorId);
+            pstmt.setInt(1, id);
+            rs = pstmt.executeQuery();
 
-	public ArrayList<Localidad> getListaLocalidades() {
-		
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-		Connection conexion = null;
-		PreparedStatement statement;
-		ResultSet resultSet;
-		ArrayList<Localidad> listadoLocalidad = new ArrayList<Localidad>();
-		
-		try {
-			conexion = conexionDB.getConnection();
-			statement = conexion.prepareStatement(selectAllLocalidad);
-			resultSet = statement.executeQuery();
-			while(resultSet.next()) {
-				listadoLocalidad.add(getLocalidad(resultSet));
-			}
-		}
-		
-		catch(SQLException e){
-			e.printStackTrace();
-		}
-		
-		finally {
-			if(conexion != null)
-			{
-				try 
-				{
-					conexion.close();
-				}
-				catch (SQLException e) 
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-		
-		return listadoLocalidad;
-	}
+            if (rs.next()) {
+                String nombre = rs.getString("localidad");
+                int idProvincia = rs.getInt("id_provincia");
+                localidad = new Localidad(id, nombre, idProvincia);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+                if (conexion != null) conexion.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
 
-	private Localidad getLocalidad(ResultSet resultSet) {
-		
-		Localidad localidad= null;
-		
-		try {
-			localidad = new Localidad();
-			localidad.setIdLocalidad(resultSet.getInt("id_localidad"));
-			localidad.setLocalidad(resultSet.getString("localidad"));	
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return localidad;
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+        return localidad;
+    }
+
 }

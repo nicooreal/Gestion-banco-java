@@ -101,7 +101,7 @@ public class adminCuentasServlet extends HttpServlet {
 		cuenta.setCliente(clDao.buscar_con_id(Integer.parseInt(request.getParameter("idCliente"))));
 		cuenta.setNumeroCuenta(cuentaDao.generarNumeroCuenta());
 		cuenta.setFecha(fechaHoy);
-		cuenta.setEstado("true");
+		cuenta.setEstado("True");
 		cuenta.setIdCuenta(cuentaDao.cantidadRegistros() + 1);
 		
 		CuentaDao cd = new CuentaDao();

@@ -54,6 +54,7 @@
 	                <th>Plazo restante</th>
 	                <th>Monto Mensual</th>
 	                <th>Estado</th>
+	                <th>Opciones</th>
 	                
 	            </tr>
 	        </thead>
@@ -75,14 +76,20 @@
 	                    <td><%= prestamo.getMontoMensual() %></td>
 	                    <td><%= prestamo.getEstado().name() %></td>
 	                    
-					    <td class"action-buttons" >
+	                    <td class"action-buttons" >
+	                    
+	                    <% if(prestamo.getEstado().name() == "Aprobado"){%>
 					    <div style="display:flex">
 					        <form action="PortalPagosBancoServlet" method="get">
 					        	<input type="hidden" name="prestamoId" value="<%= prestamo.getIdPrestamo() %>" />
 					            <input type="submit" name="btnPagarPrestamo" value="PAGAR" />
 					        </form>
 					    </div>
-					    </td>
+					    
+					    
+	                    <%}%>
+	                    
+	                    </td>
 					</tr>	
 				<% }
 	            			

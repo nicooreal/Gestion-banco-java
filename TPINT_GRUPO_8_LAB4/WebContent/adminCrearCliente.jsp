@@ -125,8 +125,30 @@
     
 
     </style>
+    
+     <script>
+        function actualizarLocalidades() {
+        	
+        	var provinciaId = document.getElementById("provincia").value;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "adminClientesServlet?ListarLocalidades&provinciaId=" + provinciaId, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var localidades = JSON.parse(xhr.responseText);
+                    var localidadSelect = document.getElementById("localidad");
+                    localidadSelect.innerHTML = "";
 
- <script>
+                    localidades.forEach(function(localidad) {
+                        var option = document.createElement("option");
+                        option.value = localidad.id;
+                        option.text = localidad.nombre;
+                        localidadSelect.appendChild(option);
+                    });
+                }
+            };
+            xhr.send();
+        }
+        
         function showMessage(message) {
             alert(message);
         }
@@ -155,19 +177,21 @@
                 showMessage('Por favor complete todos los campos obligatorios.');
                 return false;
             }
-            
-            // Custom messages based on the button
+
+
             var button = document.activeElement;
             if (button.name === 'modificarCliente') {
                 showMessage('Modificación del cliente realizada con éxito.');
             } else if (button.name === 'SubmitCliente') {
                 showMessage('Cliente aceptado con éxito.');
             }
-            
-            return true; // Proceed with form submission if validation is successful
-        }
-    </script>
 
+            return true; 
+        }
+        
+    </script>
+    
+    
 </head>
 <body>
 
@@ -232,15 +256,13 @@
 		for (Pais p : listadoPaises){
 			%>
 		
-        <option value="<%= p.getIdPais() %>" <%= (cAux != null && cAux.getNacionalidad().getIdPais() == p.getIdPais()) ? "selected" : "" %>><%= p.getNombre() %></option>
-    <% 
-        }
-    } 
-    %>
+		<option value="<%= p.getIdPais() %>"><%= p.getNombre() %></option>
+		
+			<%}
+		}%>
 		
 		</select>
-		
-
+		<% if (cAux != null) { %> value="<%= cAux.getNacionalidad().getNombre() %>" <% } %>
 		
 		
 		
@@ -251,45 +273,39 @@
 		<label>Direccion</label>
 		<input type="text" name="direccion" id="direccion" <% if (cAux != null) { %> value="<%= cAux.getDireccion() %>" <% } %>>
 		<br>
-
+		<br>
+		
 		<label>Provincia</label>
-		<select name="provincia" id="provincia">
+		
+		<select name="provincia" id="provincia"  onchange="actualizarLocalidades()">
 		<% if(request.getAttribute("listadoProvincias") != null){ 
 			List<Provincia> listadoProvincias =  (List<Provincia>)request.getAttribute("listadoProvincias");
 		for (Provincia p : listadoProvincias){
-
-
-		    %>
-	        <option value="<%= p.getId_provincia() %>" <%= (cAux != null && cAux.getProvincia().getId_provincia() == p.getId_provincia()) ? "selected" : "" %>><%= p.getNombre_provincia() %></option>
-	    <% 
-	        }
-	    } 
-	    %>
-	</select>
-			<label>Localidad</label>
+			%>
+		
+		<option value="<%= p.getId_provincia()%>"><%= p.getNombre_provincia() %></option>
+		
+		<%}
+		}%>
+		</select>
+		
+		
+		<br>
+		
+		<label>Localidad</label>
 		<select name="localidad" id="localidad">
 		<% if(request.getAttribute("listadoLocalidades") != null){ 
 			List<Localidad> listadoLocalidades =  (List<Localidad>)request.getAttribute("listadoLocalidades");
 		for (Localidad L : listadoLocalidades){
-
-			   %>
-		        <option value="<%= L.getIdLocalidad() %>" <%= (cAux != null && cAux.getLocalidad().getIdLocalidad() == L.getIdLocalidad()) ? "selected" : "" %>><%= L.getLocalidad() %></option>
-		    <% 
-		        }
-		    } 
-		    %>
-			
-			
-			
+			%>
+		
+		<option value="<%= L.getId()%>"><%= L.getNombre() %></option>
+		
+		<%}
+		}%>
+		<br>
 		</select>
-	
-				<label>Contraseña</label>
-		<input type="password" name="contraseña" id="contraseña" <% if (cAux != null) { %> value="<%  %>" <% } %>>
-		<br>
-	
-
-
-		<br>
+		
 		<label>E-mail</label>
 		<input type="text" name="email" id="email" <% if (cAux != null) { %> value="<%= cAux.getCorreoElectronico() %>" <% } %>>
 		<br>
@@ -298,19 +314,14 @@
 		if(request.getParameter("clienteId") != null){
 			
 		%>
-		<button type="submit" class="btn btn-primary" name="modificarCliente" id="modificarCliente" >Modificar</button>
+		<button type="submit" class="btn btn-primary" name="modificarCliente" id="modificarCliente">Modificar</button>
 		<input type="hidden" name="idModificar" value="<%= cAux.getId() %>" />
 		<%}
 		 else { %>
 		
-		<button type="submit" class="btn btn-primary" name="SubmitCliente" id="SubmitCliente" >Aceptar</button>
+		<button type="submit" class="btn btn-primary" name="SubmitCliente" id="SubmitCliente">Aceptar</button>
 		
 		<%} %>
-	
-	
-	
-	
-	
 	
 	    </div>
 		</div>

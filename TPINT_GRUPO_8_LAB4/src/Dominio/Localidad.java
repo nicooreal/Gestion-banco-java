@@ -1,60 +1,50 @@
 package Dominio;
 
 public class Localidad {
-    private int idLocalidad;
-    private int idProvincia;
-    private String localidad;
 
-    // Constructor
-    public Localidad(int idLocalidad, int idProvincia, String localidad) {
-        this.idLocalidad = idLocalidad;
-        this.idProvincia = idProvincia;
-        this.localidad = localidad;
+	private int id;
+	private String nombre;
+	private int id_provincia;
+	
+	
+	public Localidad(int id, String nombre, int id_provincia) {
+        this.id = id;
+        this.nombre = nombre;
+        this.id_provincia = id_provincia;
     }
-
-    
-    
-    
-    public Localidad() {
-		super();
-		// TODO Auto-generated constructor stub
+	
+	public Localidad() {
+    }
+	
+	
+	public int getId() {
+		return id;
 	}
-
-
-
-
-	// Getters y Setters
-    public int getIdLocalidad() {
-        return idLocalidad;
-    }
-
-    public void setIdLocalidad(int idLocalidad) {
-        this.idLocalidad = idLocalidad;
-    }
-
-    public int getIdProvincia() {
-        return idProvincia;
-    }
-
-    public void setIdProvincia(int idProvincia) {
-        this.idProvincia = idProvincia;
-    }
-
-    public String getLocalidad() {
-        return localidad;
-    }
-
-    public void setLocalidad(String localidad) {
-        this.localidad = localidad;
-    }
-
-    // Método toString para una representación legible de la Localidad
-    @Override
-    public String toString() {
-        return "Localidad{" +
-                "idLocalidad=" + idLocalidad +
-                ", idProvincia=" + idProvincia +
-                ", localidad='" + localidad + '\'' +
-                '}';
-    }
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getNombre() {
+		return nombre;
+	}
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+	public int id_provincia() {
+		return id_provincia;
+	}
+	public void id_provincia(int id_provincia) {
+		this.id_provincia = id_provincia;
+	}
+	
+	
+	@Override
+	public String toString() {
+		return "Localidad [id=" + id + ", nombre=" + nombre + "]";
+	}
+	
+	
+	
+	
+	
+	
 }

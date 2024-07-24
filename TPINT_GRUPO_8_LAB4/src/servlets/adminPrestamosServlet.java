@@ -12,50 +12,52 @@ import javax.servlet.http.HttpServletResponse;
 
 import Dominio.Prestamo;
 import Dao.PrestamoDao;;
-/**
- * Servlet implementation class adminPrestamosServlet
- */
+
 @WebServlet("/adminPrestamosServlet")
 public class adminPrestamosServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
+
+
     public adminPrestamosServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		mostrarPrestamos(request,response);	
-		if (request.getParameter("btnRechazar") != null)	{
-	        int idParaRechazar = Integer.parseInt(request.getParameter("prestamoId"));
-	        PrestamoDao preDao = new PrestamoDao();
-	        int baja = preDao.rechazarPrestamo(idParaRechazar);
-	        if (baja == 1) {
-	            RequestDispatcher rd = request.getRequestDispatcher("adminPrestamos.jsp");
-	            rd.forward(request, response);
-	        }
-		}
-		if (request.getParameter("btnAprobar") != null)	{
-			aprobarPrestamo(request,response);
-		} 
-		//PrestamoDao pDao = new PrestamoDao();
-		//pDao.finalizarPrestamo();
+		// Maneja las solicitudes para aprobar o rechazar préstamos
+        if (request.getParameter("btnRechazar") != null) {
+            manejarRechazoPrestamo(request);
+        } else if (request.getParameter("btnAprobar") != null) {
+            manejarAprobacionPrestamo(request);
+        }
+        
+        // Mostrar la lista actualizada de préstamos
+        mostrarPrestamos(request, response);
+		
 		
 	}
 	
-	private void aprobarPrestamo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		 int idParaAprobar = Integer.parseInt(request.getParameter("prestamoId"));
-	        int idCuentaDestino = Integer.parseInt(request.getParameter("idCuentaDestino"));
-	        PrestamoDao preDao = new PrestamoDao();
-	        preDao.aprobarPrestamo(idParaAprobar, idCuentaDestino);
-	}
+	private void manejarRechazoPrestamo(HttpServletRequest request) {
+        try {
+            int idParaRechazar = Integer.parseInt(request.getParameter("prestamoId"));
+            PrestamoDao preDao = new PrestamoDao();
+            preDao.rechazarPrestamo(idParaRechazar);
+        } catch (NumberFormatException e) {
+            e.printStackTrace(); // Manejo de errores
+        }
+    }
 
+    private void manejarAprobacionPrestamo(HttpServletRequest request) {
+        try {
+            int idParaAprobar = Integer.parseInt(request.getParameter("prestamoId"));
+            int idCuentaDestino = Integer.parseInt(request.getParameter("idCuentaDestino"));
+            PrestamoDao preDao = new PrestamoDao();
+            preDao.aprobarPrestamo(idParaAprobar, idCuentaDestino);
+        } catch (NumberFormatException e) {
+            e.printStackTrace(); // Manejo de errores
+        }
+    }
 
     private void mostrarPrestamos(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ArrayList<Prestamo> listadoPrestamos = new ArrayList<>();
@@ -65,18 +67,14 @@ public class adminPrestamosServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
         }
-		request.setAttribute("listadoPrestamos", listadoPrestamos);
-		RequestDispatcher requestDispatcher = request.getRequestDispatcher("/adminPrestamos.jsp");   
-		requestDispatcher.forward(request, response);	
+        request.setAttribute("listadoPrestamos", listadoPrestamos);
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher("/adminPrestamos.jsp");   
+        requestDispatcher.forward(request, response);    
     }
-	
-	
-	
-	
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+	
+    
+    
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}

@@ -46,7 +46,7 @@
 		<input type="text" name="direccion" id="direccion" <% if (cAux != null) { %> value="<%= cAux.getDireccion() %>" <% } %>>
 		<br>
 		<label>Localidad</label>
-		<input type="text" name="localidad" id="localidad" <% if (cAux != null) { %> value="<%= cAux.getLocalidad() %>" <% } %>>
+		<input type="text" name="localidad" id="localidad" <% if (cAux != null) { %> value="<%= cAux.getLocalidad().getNombre() %>" <% } %>>
 		<br>
 		<label>Provincia</label>
 		<input type="text" name="provincia" id="provincia" <% if (cAux != null) { %> value="<%= cAux.getProvincia().getNombre_provincia() %>" <% } %>>

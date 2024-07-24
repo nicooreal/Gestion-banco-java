@@ -38,7 +38,7 @@
                 <label for="monto">Monto:</label>
                 <input type="number" class="form-control" id="monto" name="monto" required>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Realizar Transferencia</button>
+            <button type="submit" name="btnSubmitTransferencia" class="btn btn-primary btn-block">Realizar Transferencia</button>
         </form>
     </div>
 </body>
