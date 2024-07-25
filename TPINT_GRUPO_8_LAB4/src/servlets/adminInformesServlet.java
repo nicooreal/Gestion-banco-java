@@ -1,6 +1,9 @@
 package servlets;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
@@ -37,10 +40,62 @@ public class adminInformesServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		
+		SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy-MM-dd");
+		
+		
+		
 		if(request.getParameter("btnInforme1")!= null) {
-			mayorSaldoA(request, response, Float.parseFloat(request.getParameter("inputInforme1")));
+          
+           
+			
+			java.util.Date fechaInicio = null;
+			java.util.Date fechaLimite = null;
+			
+			
+            try {
+                fechaInicio = formatoFecha.parse(request.getParameter("inputFechaInicio1"));
+                fechaLimite = formatoFecha.parse(request.getParameter("inputFechaFin1"));
+          
+            
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+			
+      float num =  Float.parseFloat(request.getParameter("inputInforme1"));
+			
+			mayorSaldoA(request, response, num, fechaInicio, fechaLimite );
+		
+		
+		
 		} else if(request.getParameter("btnInforme2")!= null) {
-			menorSaldoA(request, response, Float.parseFloat(request.getParameter("inputInforme2")));
+			
+			java.util.Date fechaInicio = null;
+			java.util.Date fechaLimite = null;
+			
+			
+            try {
+                fechaInicio = formatoFecha.parse(request.getParameter("inputFechaInicio2"));
+                fechaLimite = formatoFecha.parse(request.getParameter("inputFechaFin2"));
+          
+            
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+			
+            float num =  Float.parseFloat(request.getParameter("inputInforme2"));
+            
+            menorSaldoA(request, response,num,fechaInicio,fechaLimite);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		} else if(request.getParameter("btnInforme3")!= null) {
 			clientesPorProvincia(request, response);
 		}
@@ -48,20 +103,20 @@ public class adminInformesServlet extends HttpServlet {
 		//response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
-	private void mayorSaldoA (HttpServletRequest request, HttpServletResponse response, float num) throws ServletException, IOException {
+	private void mayorSaldoA (HttpServletRequest request, HttpServletResponse response, float num, java.util.Date fechaInicio, java.util.Date fechaLimite ) throws ServletException, IOException {
 		ClienteSaldoDao csDao = new ClienteSaldoDao();
 		ArrayList<ClienteSaldo> listadoClientesPorSaldo = new ArrayList <ClienteSaldo>();
-		listadoClientesPorSaldo = csDao.obtenerClientesConSaldoMayor(num, true);
+		listadoClientesPorSaldo = csDao.obtenerClientesConSaldoMayor(num, true, fechaInicio, fechaLimite);
 		request.setAttribute("listadoClientesPorSaldo", listadoClientesPorSaldo);
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher("/adminInformes.jsp");   
 		requestDispatcher.forward(request, response);
 		
 	}
 
-	private void menorSaldoA (HttpServletRequest request, HttpServletResponse response, float num) throws ServletException, IOException {
+	private void menorSaldoA (HttpServletRequest request, HttpServletResponse response, float num, java.util.Date fechaInicio, java.util.Date fechaLimite) throws ServletException, IOException {
 		ClienteSaldoDao csDao = new ClienteSaldoDao();
 		ArrayList<ClienteSaldo> listadoClientesPorSaldo = new ArrayList <ClienteSaldo>();
-		listadoClientesPorSaldo = csDao.obtenerClientesConSaldoMayor(num, false);
+		listadoClientesPorSaldo = csDao.obtenerClientesConSaldoMayor(num, false, fechaInicio, fechaLimite);
 		request.setAttribute("listadoClientesPorSaldo", listadoClientesPorSaldo);
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher("/adminInformes.jsp");   
 		requestDispatcher.forward(request, response);

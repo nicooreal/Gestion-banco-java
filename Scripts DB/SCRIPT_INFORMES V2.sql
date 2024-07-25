@@ -2,7 +2,7 @@
 DROP VIEW IF EXISTS vw_saldo_por_cliente;
 
 CREATE VIEW vw_saldo_por_cliente AS
-SELECT id_cliente, SUM(saldo) AS total_saldo
+SELECT id_cliente, SUM(saldo) AS total_saldo, fecha 
 FROM cuentas
 GROUP BY id_cliente
 ORDER BY total_saldo DESC;
@@ -11,14 +11,18 @@ ORDER BY total_saldo DESC;
 DROP PROCEDURE IF EXISTS sp_buscar_saldos_mayores;
 DELIMITER //
 
-CREATE PROCEDURE sp_buscar_saldos_mayores(IN num FLOAT)
+CREATE PROCEDURE sp_buscar_saldos_mayores(
+    IN num FLOAT,
+    IN fecha_inicio DATE,
+    IN fecha_fin DATE
+)
 BEGIN
     SELECT id_cliente, total_saldo
     FROM vw_saldo_por_cliente
     WHERE total_saldo >= num
+      AND fecha BETWEEN fecha_inicio AND fecha_fin  -- Filtra por el rango de fechas
     ORDER BY total_saldo ASC;
 END //
-
 DELIMITER ;
 
 
@@ -26,11 +30,16 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS sp_buscar_saldos_menores;
 DELIMITER //
 
-CREATE PROCEDURE sp_buscar_saldos_menores(IN num FLOAT)
+CREATE PROCEDURE sp_buscar_saldos_menores(
+    IN num FLOAT,
+    IN fecha_inicio DATE,
+    IN fecha_fin DATE
+)
 BEGIN
     SELECT id_cliente, total_saldo
     FROM vw_saldo_por_cliente
     WHERE total_saldo <= num
+      AND fecha BETWEEN fecha_inicio AND fecha_fin  -- Filtra por el rango de fechas
     ORDER BY total_saldo DESC;
 END //
 
