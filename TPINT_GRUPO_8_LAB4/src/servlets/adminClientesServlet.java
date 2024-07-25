@@ -84,7 +84,12 @@ public class adminClientesServlet extends HttpServlet {
 
         request.setAttribute("listadoClientes", listadoClientes);
         RequestDispatcher rd = request.getRequestDispatcher("/adminClientes.jsp");
-        rd.forward(request, response);
+        
+     
+        for (Cliente cliente : listadoClientes) {
+            System.out.println(cliente.getId() + " " + cliente.getNombre());
+        }
+       rd.forward(request, response);
     }
 
     private void mostrarClientesEliminados(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
