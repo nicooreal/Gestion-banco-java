@@ -5,6 +5,7 @@
 <%@ page import="Dominio.*"%>
 <%@ page import="Dao.ProvinciaDao"%>
 <%@ page import="java.util.List"%>
+<%@ page import="negocio.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -212,8 +213,10 @@
 		<%
 			Cliente cAux = null;
 			if(request.getParameter("clienteId") != null){
-			ClienteDao cDao = new ClienteDao();
+		//	ClienteDao cDao = new ClienteDao();
+			NegocioCliente cDao = new NegocioCliente();
 			int idBuscado = Integer.parseInt(request.getParameter("clienteId"));
+			
 			cAux = cDao.buscar_con_id(idBuscado);}%>
 		
 		
