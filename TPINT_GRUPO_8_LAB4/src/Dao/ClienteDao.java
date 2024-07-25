@@ -183,7 +183,7 @@ public class ClienteDao implements iClienteDao{
 	}
 
     @Override
-	public int agregarCliente(Cliente clienteNuevo) {
+	public int agregarCliente(Cliente clienteNuevo, String nuevaContra) {
     	
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -240,13 +240,13 @@ public class ClienteDao implements iClienteDao{
 				
 				Usuario usuarioNuevo = new Usuario();
                 usuarioNuevo.setUsuario(clienteNuevo.getCorreoElectronico());
-                usuarioNuevo.setContrasena(clienteNuevo.getDni());
+                usuarioNuevo.setContrasena(nuevaContra);
                 usuarioNuevo.setAcceso("Cliente");
                 usuarioNuevo.setCliente(clienteNuevo);
                 usuarioNuevo.setEstado("True");
                 
                 if (usuarioDao.agregarUsuario(usuarioNuevo) == 1) {
-                    System.out.println("El USUARIO: " + clienteNuevo.getCorreoElectronico() + " fue Creado correctamente con la contraseña: " + clienteNuevo.getDni());
+                    System.out.println("El USUARIO: " + clienteNuevo.getCorreoElectronico() + " fue Creado correctamente con la contraseña: " + nuevaContra);
                 }
 				filas = 1;
 				System.out.println("El Cliente fue Agregado a la base de datos correctamente...");

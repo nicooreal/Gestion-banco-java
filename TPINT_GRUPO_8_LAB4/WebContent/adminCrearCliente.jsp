@@ -219,10 +219,19 @@
 		
 		<div class="form-container">
            <div class="form-group">    
+           
+        
 		
 		<label>DNI</label>
 		<input type="text" name="dni" id="dni" pattern="\d+" title="solo números" <% if (cAux != null) { %> value="<%= cAux.getDni() %>" <% } %> >
 		<br>
+		
+		<% if (cAux == null) { %>
+		<label>Contraseña</label>
+		<input  name="passwordNueva" id="passwordNueva" type="password">
+		<br>
+		<% } %>
+		
 		<label>CUIL</label>
 		<input type="text" name="cuil" id="cuil" pattern="\d+" title="solo números" <% if (cAux != null) { %> value="<%= cAux.getCuil() %>" <% } %>>
 		<br>
@@ -243,12 +252,14 @@
 		<br>
 		
 		
-		
 		<label>Sexo</label>
-		<input type="text" name="sexo" id="sexo" <% if (cAux != null) { %> value="<%= cAux.getSexo() %>" <% } %>>
+		<select name="sexo" id="sexo">
+		<option value="Masculino">Masculino</option>
+		<option value="Femenino">Femenino</option>
+		</select>
 		<br>
 		
-		
+		<br>
 		<label>Nacionalidad</label>
 		<select name="nacionalidad" id="nacionalidad">
 		<% if(request.getAttribute("listadoPaises") != null){ 
@@ -262,10 +273,9 @@
 		}%>
 		
 		</select>
-		<% if (cAux != null) { %> value="<%= cAux.getNacionalidad().getNombre() %>" <% } %>
 		
-		
-		
+		<br>
+		<br>
 		
 		<label for="fecha">Fecha nacimiento (YYYY-MM-DD):</label>
 		<input type="text" name="fechaNacimiento" id="fechaNacimiento" pattern="\d{4}-\d{2}-\d{2}" title="ingrese la fecha en el formato YYYY-MM-DD" <% if (cAux != null) { %> value="<%= cAux.getFechaNacimiento().toString() %>" <% } %>>

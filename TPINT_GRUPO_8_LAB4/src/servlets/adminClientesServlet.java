@@ -182,7 +182,9 @@ public class adminClientesServlet extends HttpServlet {
 	            cliente.setTelefono1(telefono1);
 	            cliente.setTelefono2(telefono2);
 	            
-	            filasAgregadas = cd.agregarCliente(cliente);
+	            String passwordNueva =  request.getParameter("passwordNueva");
+	            
+	            filasAgregadas = cd.agregarCliente(cliente, passwordNueva);
 	            // Redireccionamiento a la lista de clientes después de agregar
 	            mostrarClientes(request, response);
             }else {

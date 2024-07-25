@@ -11,7 +11,7 @@ public interface iClienteDao {
 	List<Cliente> Listar();
 	ArrayList<Cliente> ListarConEstadoFalse();
 	int eliminarCliente(int id_cliente_borrar);
-	int agregarCliente(Cliente clienteNuevo);
+	int agregarCliente(Cliente clienteNuevo, String nuevaContra);
 	int BajaLogicaCliente(int idClienteBaja);
 	int ModificacionCliente(Cliente clienteModificar);
 
