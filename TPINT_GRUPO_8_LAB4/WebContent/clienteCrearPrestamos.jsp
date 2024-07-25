@@ -14,7 +14,7 @@
 		<jsp:include page="navbarClientes.html"></jsp:include>
            <jsp:include page="ClienteNombreApellido.jsp"></jsp:include>
 <label>       
-<%= session.getAttribute("perfilClienteNombre") %>
+
 </label>		
 	    <div class="container">
 	        <div class="header">
@@ -34,21 +34,28 @@
 			                <option value="6">6</option>
 		                </select><br><br>
 	                
-	                
-	                <label for="id_cuenta_destino">Cuenta Destino:</label>
-						<select name="id_cuenta_destino" id="id_cuenta_destino">
-						<% if(request.getAttribute("listadoCuentas") != null){ 
-							List<Cuenta> listadoCuentas =  (List<Cuenta>)request.getAttribute("listadoCuentas");
-						for (Cuenta c : listadoCuentas){
-							%>
-						
-						<option value="<%= c.getIdCuenta()  %>"><%= c.getCbu()%> " - " <%= c.getTipoCuenta().getTipoCuenta()%></option>
-						
-						<%}
-						}%>
-						</select> <br><br>
-	                
-	                <input type="submit" value="Confirmar Préstamo"  id="crearPrestamo" name="crearPrestamo">
+	               
+	               
+	               
+<% 
+if (request.getAttribute("listadoCuentas") != null) { 
+    List<Cuenta> listadoCuentas = (List<Cuenta>) request.getAttribute("listadoCuentas");
+    if (listadoCuentas != null && !listadoCuentas.isEmpty()) {
+%>
+    <label for="id_cuenta_destino">Cuenta Destino:</label>
+    <select name="id_cuenta_destino" id="id_cuenta_destino">
+        <% for (Cuenta c : listadoCuentas) { %>
+            <option value="<%= c.getIdCuenta() %>"><%= c.getCbu() %> - <%= c.getTipoCuenta().getTipoCuenta() %></option>
+        <% } %>
+    </select>
+    <br><br>
+    <input type="submit" value="Confirmar Préstamo" id="crearPrestamo" name="crearPrestamo">
+<% 
+    }
+} 
+%>
+
+	            
 	            </form>
 	        </div>
 	    </div>
