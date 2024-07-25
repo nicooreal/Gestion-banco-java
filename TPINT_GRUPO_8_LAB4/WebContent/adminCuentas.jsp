@@ -136,7 +136,7 @@ $(document).ready(function() {
 	                <th>CBU</th>
 	                <th>Saldo</th>
 	                <th>Estado</th>
-                    <th></th>
+                    <th>Opciones</th>
 
 	            </tr>
 	        </thead>
@@ -173,6 +173,7 @@ $(document).ready(function() {
        
                <form action="adminActivarCuenta.jsp" method="get">
         	<input type="hidden" name="cuentaId" value="<%= cuenta.getIdCuenta() %>" />
+        	<input type="hidden" name="idCliente" value="<%= cuenta.getCliente().getId() %>" />
             <input type="submit" name="btnModificar" value="ACTIVAR " />
         </form>
 

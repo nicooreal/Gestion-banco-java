@@ -31,6 +31,7 @@
 
 
 <%
+int idCliente = Integer.parseInt(request.getParameter("idCliente"));
 
 String cuentaId = request.getParameter("cuentaId");
 int idCuenta = Integer.parseInt(cuentaId);
@@ -44,6 +45,7 @@ if (cuentaId!= null && !cuentaId.isEmpty()) {
     <p>ID de cuenta a Activar: <%= idCuenta %></p>
 
     <form action="adminCuentasServlet" method="get">
+    <input type="hidden" name="idCliente" value="<%= idCliente %>" />
     <input type="hidden" name="CuentaId" value="<%= idCuenta %>" />
     <input type="submit" name="btnActivar" value="CONFIRMAR ALTA " /><br>
     <a class="nav-link" aria-current="page" href="adminCuentas.jsp">Cancelar</a>

@@ -18,6 +18,7 @@ import Dominio.Cliente;
 import Dominio.Cuenta;
 import Dominio.TiposCuenta;
 import negocio.NegocioCliente;
+import negocio.NegocioCuenta;
 
 /**
  * Servlet implementation class adminCuentasServlet
@@ -27,6 +28,7 @@ public class adminCuentasServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 	NegocioCliente negCliente = new NegocioCliente();
+	NegocioCuenta negCuenta = new NegocioCuenta();
 	
 	
     public adminCuentasServlet() {
@@ -65,14 +67,13 @@ public class adminCuentasServlet extends HttpServlet {
 	
 	private void prepararCrearCuenta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		CuentaDao cuentaDao = new CuentaDao();
-		
-		request.setAttribute("idProximoCrear",cuentaDao.generarNumeroCuenta());
-		request.setAttribute("CbuProximoACrear",cuentaDao.generarCbu());
-		
+		request.setAttribute("idProximoCrear", negCuenta.nuevoNumeroDeCuenta());
+		request.setAttribute("CbuProximoACrear", negCuenta.nuevoNumeroCbu());
 		request.setAttribute("listadoIdClientes", negCliente.listarConTrue());
+		
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher("/adminCrearCuenta.jsp");   
 		requestDispatcher.forward(request, response);
+		
 	}
 	
 	
@@ -89,11 +90,10 @@ public class adminCuentasServlet extends HttpServlet {
 	private void crearCuenta (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		ClienteDao clDao = new ClienteDao();
-        CuentaDao cuentaDao = new CuentaDao();
 		TiposCuenta tipCuenta = new TiposCuenta();
-		Cuenta cuenta  = new Cuenta();
 		
-	    java.util.Date fechaHoy = new  java.util.Date() ;
+		Cuenta cuenta  = new Cuenta();
+	    java.util.Date fechaHoy = new java.util.Date() ;
 		
 		String tipoCuenta = request.getParameter("tipoCuenta");
 		if (tipoCuenta.equals("Caja Ahorro")) 
@@ -107,25 +107,21 @@ public class adminCuentasServlet extends HttpServlet {
 		    tipCuenta.setTipoCuenta(tipoCuenta);
 		}
 		
-		
 		cuenta.setCbu(request.getParameter(("cbu")));
 		cuenta.setSaldo(Float.parseFloat(request.getParameter("saldo")));
 		cuenta.setTipoDeCuenta(tipCuenta);
 		cuenta.setCliente(clDao.buscar_con_id(Integer.parseInt(request.getParameter("idCliente"))));
-		cuenta.setNumeroCuenta(cuentaDao.generarNumeroCuenta());
+		cuenta.setNumeroCuenta(negCuenta.nuevoNumeroDeCuenta());
 		cuenta.setFecha(fechaHoy);
 		cuenta.setEstado("True");
-		cuenta.setIdCuenta(cuentaDao.cantidadRegistros() + 1);
+		cuenta.setIdCuenta(negCuenta.cantidadRegistros());
 		
-		CuentaDao cd = new CuentaDao();
-		int filasAgregadas = cd.agregarCuenta(cuenta);
+		int filasAgregadas = negCuenta.agregarCuenta(cuenta);
 		
 		if(filasAgregadas == 0) {
 			RequestDispatcher requestDispatcher = request.getRequestDispatcher("/ErrorAlCrearCuenta.jsp");   
 			requestDispatcher.forward(request, response);
 		}
-		
-	
 		
 		mostrarCuenta(request, response);
 	}
@@ -183,12 +179,17 @@ public class adminCuentasServlet extends HttpServlet {
 	private void eliminarCuenta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int idParaBorrar = Integer.parseInt(request.getParameter("CuentaId"));
 
-        CuentaDao cuentaDao = new CuentaDao();
-        int baja = cuentaDao.BajaLogicaCuenta(idParaBorrar);
+        int baja = negCuenta.bajaCuenta(idParaBorrar);
 
         if (baja == 1) {
-            RequestDispatcher rd = request.getRequestDispatcher("adminCuentas.jsp");
-            rd.forward(request, response);
+        	mostrarCuenta(request, response);
+        }else {
+        	String error = "NO SE PUDO ELIMINAR LA CUENTA DE ESTE CLIENTE.";
+        	String redirect = "adminClientesServlet";
+        	request.setAttribute("paginaOrigen", redirect);
+        	request.setAttribute("exception", error);
+        	RequestDispatcher requestDispatcher = request.getRequestDispatcher("/ErrorPage.jsp");   
+    		requestDispatcher.forward(request, response);
         }
     }
 	
@@ -196,13 +197,20 @@ public class adminCuentasServlet extends HttpServlet {
 	
 	private void activarCuenta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int idParaActivar = Integer.parseInt(request.getParameter("CuentaId"));
+        int idCliente = Integer.parseInt(request.getParameter("idCliente"));
 
-        CuentaDao cuentaDao = new CuentaDao();
-        int baja = cuentaDao.AltaLogicaCuenta(idParaActivar);
+        int baja = negCuenta.altaCuenta(idParaActivar, idCliente);
 
         if (baja == 1) {
-            RequestDispatcher rd = request.getRequestDispatcher("adminCuentas.jsp");
-            rd.forward(request, response);
+        	mostrarCuenta(request, response);
+        }
+        else {
+        	String error = "NO SE PUDO AGREGAR LA CUENTA A ESTE CLIENTE. (limite alcanzado 3)";
+        	String redirect = "adminClientesServlet";
+        	request.setAttribute("paginaOrigen", redirect);
+        	request.setAttribute("exception", error);
+        	RequestDispatcher requestDispatcher = request.getRequestDispatcher("/ErrorPage.jsp");   
+    		requestDispatcher.forward(request, response);
         }
     }	
 	
@@ -212,9 +220,7 @@ public class adminCuentasServlet extends HttpServlet {
 	
 		ArrayList<Cuenta> listadoCuentas = new ArrayList<Cuenta>();
 		try {
-			CuentaDao cd = new CuentaDao();
-			//if(request.getParameter("botonMostrar") != null) 
-				listadoCuentas = cd.Listar();
+			listadoCuentas = negCuenta.listar();
 			
 		}
 		catch(Exception e){
@@ -222,16 +228,15 @@ public class adminCuentasServlet extends HttpServlet {
 		}
 		// el boton de mostrar que muestra todos los clientes desactivados (estado false)		
 		try {
-			CuentaDao cd = new CuentaDao();
 			if(request.getParameter("botonMostrarEliminados") != null) {
-				listadoCuentas = cd.ListarConEstadoFalse();
+				listadoCuentas = negCuenta.listarConFalse();
 			}
 		}
 		catch(Exception e){
 			e.printStackTrace();
 		}	
-		
-		int filasAgregadas = 0;
+
+
 		request.setAttribute("listadoCuentas", listadoCuentas);
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher("/adminCuentas.jsp");   
 		requestDispatcher.forward(request, response);

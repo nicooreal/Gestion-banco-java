@@ -470,7 +470,7 @@ public class CuentaDao implements iCuentaDao{
 	}	
 	
 	
-	public int AltaLogicaCuenta(int idCuentaAlta) {
+	public int AltaLogicaCuenta(int idCuentaAlta, int id_cliente) {
 		
 	    try {
 	        Class.forName("com.mysql.jdbc.Driver");
@@ -482,32 +482,37 @@ public class CuentaDao implements iCuentaDao{
 	    Connection conexion = null;
 	    PreparedStatement pst = null;
 	    int filas = 0;
-
-	    try {
-	        conexion = conexionDB.getConnection();
-	        pst = conexion.prepareStatement(altaLogica);
-	        pst.setInt(1, idCuentaAlta);
-	
-	        filas = pst.executeUpdate();
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    } finally {
 	    
-	        if (pst != null) {
-	            try {
-	                pst.close();
-	            } catch (SQLException e) {
-	                e.printStackTrace();
-	            }
-	        }
-	
-	        if (conexion != null) {
-	            try {
-	                conexion.close();
-	            } catch (SQLException e) {
-	                e.printStackTrace();
-	            }
-	        }
+	    int cuentasActuales = cuentasDelCliente(id_cliente);
+	    int maximoCuentasPorCliente = 3;
+	    
+	    if(cuentasActuales < maximoCuentasPorCliente) {
+		    try {
+		        conexion = conexionDB.getConnection();
+		        pst = conexion.prepareStatement(altaLogica);
+		        pst.setInt(1, idCuentaAlta);
+		
+		        filas = pst.executeUpdate();
+		    } catch (SQLException e) {
+		        e.printStackTrace();
+		    } finally {
+		    
+		        if (pst != null) {
+		            try {
+		                pst.close();
+		            } catch (SQLException e) {
+		                e.printStackTrace();
+		            }
+		        }
+		
+		        if (conexion != null) {
+		            try {
+		                conexion.close();
+		            } catch (SQLException e) {
+		                e.printStackTrace();
+		            }
+		        }
+		    }
 	    }
 	    return filas;		
 	}	
