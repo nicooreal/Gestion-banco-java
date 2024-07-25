@@ -19,6 +19,7 @@ import Dominio.Localidad;
 import Dominio.Pais;
 import Dominio.Provincia;
 import Dominio.Telefono;
+import negocio.NegocioCliente;
 import Dao.ClienteDao;
 import Dao.LocalidadDao;
 import Dao.PaisDao;
@@ -46,6 +47,9 @@ public class adminClientesServlet extends HttpServlet {
 	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+    	
+    	
+    	
        if (request.getParameter("botonMostrarEliminados")!=null) {
             mostrarClientesEliminados(request, response);
        } else if (request.getParameter("botonMostrarActivados")!=null) {
@@ -73,48 +77,60 @@ public class adminClientesServlet extends HttpServlet {
     }
 
     private void mostrarClientes(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ArrayList<Cliente> listadoClientes = new ArrayList<>();
+    
+    	
+    	NegocioCliente negCliente = new NegocioCliente();
+    /*	
+    	ArrayList<Cliente> listadoClientes = new ArrayList<>();
         
+      
         try {
             ClienteDao cd = new ClienteDao();
             listadoClientes = cd.Listar();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        request.setAttribute("listadoClientes", listadoClientes);
+*/
+        request.setAttribute("listadoClientes", negCliente.listar());
         RequestDispatcher rd = request.getRequestDispatcher("/adminClientes.jsp");
 
         rd.forward(request, response);
     }
 
     private void mostrarClientesEliminados(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ArrayList<Cliente> listadoClientes = new ArrayList<>();
-        
+   
+      
+        NegocioCliente negCliente = new NegocioCliente();
+       
+        /*
         try {
+                ArrayList<Cliente> listadoClientes = new ArrayList<>();
             ClienteDao cd = new ClienteDao();
             listadoClientes = cd.ListarConEstadoFalse();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        request.setAttribute("listadoClientes", listadoClientes);
+*/
+        request.setAttribute("listadoClientes", negCliente.listarConFalse());
         RequestDispatcher rd = request.getRequestDispatcher("/adminClientes.jsp");
         rd.forward(request, response);
     }
 
    
     private void mostrarClientesActivados(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ArrayList<Cliente> listadoClientes = new ArrayList<>();
-        
+     
+    	 NegocioCliente negCliente = new NegocioCliente();
+    	
+        /*       
+       ArrayList<Cliente> listadoClientes = new ArrayList<>();
         try {
             ClienteDao cd = new ClienteDao();
             listadoClientes = cd.ListarConEstadoTrue();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        request.setAttribute("listadoClientes", listadoClientes);
+*/
+        request.setAttribute("listadoClientes", negCliente.listarConTrue());
         RequestDispatcher rd = request.getRequestDispatcher("/adminClientes.jsp");
         rd.forward(request, response);
     }
@@ -125,11 +141,14 @@ public class adminClientesServlet extends HttpServlet {
     
     
     private void agregarCliente(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	ClienteDao cd = new ClienteDao();
+    	
+    	//ClienteDao cd = new ClienteDao();
+    	NegocioCliente negCliente = new NegocioCliente();
+    	
     	int filasAgregadas = 0;
 	        
 	        // Validación de campos
-	        if (validarCamposCliente(request) && !cd.existeDni(request.getParameter("dni"))) {
+	        if (validarCamposCliente(request) && !negCliente.existeDni(request.getParameter("dni"))) {
 	            // Procesamiento para agregar cliente
 	            java.util.Date dateNacimiento = null;
 	            SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy-MM-dd");
@@ -184,7 +203,13 @@ public class adminClientesServlet extends HttpServlet {
 	            
 	            String passwordNueva =  request.getParameter("passwordNueva");
 	            
-	            filasAgregadas = cd.agregarCliente(cliente, passwordNueva);
+	            filasAgregadas =   negCliente.agregarCliente(cliente, passwordNueva);
+	            		
+	            //cd.agregarCliente(cliente, passwordNueva);
+	           
+	            
+	            
+	            
 	            // Redireccionamiento a la lista de clientes después de agregar
 	            mostrarClientes(request, response);
             }else {
@@ -195,9 +220,12 @@ public class adminClientesServlet extends HttpServlet {
 
     private void eliminarCliente(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int idParaBorrar = Integer.parseInt(request.getParameter("ClienteId"));
-
-        ClienteDao cliDao = new ClienteDao();
-        int baja = cliDao.BajaLogicaCliente(idParaBorrar);
+        NegocioCliente negCliente = new NegocioCliente();
+      //  ClienteDao cliDao = new ClienteDao();
+       
+        int baja = negCliente.bajaLogicaCliente(idParaBorrar);
+        	
+        //cliDao.BajaLogicaCliente(idParaBorrar);
 
         if (baja == 1) {
             RequestDispatcher rd = request.getRequestDispatcher("adminClientes.jsp");
@@ -207,9 +235,13 @@ public class adminClientesServlet extends HttpServlet {
 
     private void modificarCliente(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int idParaModificar = Integer.parseInt(request.getParameter("idModificar"));
-        ClienteDao cd = new ClienteDao();
-       //  Validación de campos
-        if (validarCamposCliente(request) && !cd.existeDni(request.getParameter("dni"), idParaModificar)) {
+       // ClienteDao cd = new ClienteDao();
+       
+        
+        NegocioCliente negCliente = new NegocioCliente();
+        
+        //  Validación de campos
+        if (validarCamposCliente(request) && !negCliente.existeDni(request.getParameter("dni"), idParaModificar)) {
             // Procesamiento para modificar cliente
             java.util.Date dateNacimiento = null;
             SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy-MM-dd");
@@ -251,10 +283,10 @@ public class adminClientesServlet extends HttpServlet {
             cliente.setId(idParaModificar);
 
             
-            cd.ModificacionCliente(cliente);
-   
+         //  cd.ModificacionCliente(cliente);
+           negCliente.ModificacionCliente(cliente);
             
-            if(cd.ModificacionTelefonos(request.getParameter("telefono1"), request.getParameter("telefono2"), idParaModificar) > 0) {
+            if(negCliente.ModificacionTelefonos(request.getParameter("telefono1"), request.getParameter("telefono2"), idParaModificar) > 0) {
                 System.out.println("Telefono modificado ok");
             }   
             
@@ -272,8 +304,10 @@ public class adminClientesServlet extends HttpServlet {
     private void activarCliente(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int idParaActivar = Integer.parseInt(request.getParameter("ClienteId"));
 
-        ClienteDao cliDao = new ClienteDao();
-        int alta = cliDao.AltaLogicaCliente(idParaActivar);
+        NegocioCliente negCliente = new NegocioCliente();
+        
+       // ClienteDao cliDao = new ClienteDao();
+        int alta = negCliente.AltaLogicaCliente(idParaActivar);
 
         if (alta == 1) {
             RequestDispatcher rd = request.getRequestDispatcher("adminClientes.jsp");
