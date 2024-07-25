@@ -153,10 +153,6 @@
       
        <% if (cuenta.getEstado() == Cuenta.ESTADO.True ) {%>
     	   
-    	   
-    	   
-      
-      
         <form action="adminEliminarCuenta.jsp" method="post">
             <input type="hidden" name="cuentaId" value="<%= cuenta.getIdCuenta() %>" />
             <input type="submit" name="btnEliminar" value="ELIMINAR" />
@@ -172,9 +168,9 @@
        
      <%}%> 
        
-        <form action="adminCrearCuenta.jsp" method="get">
-        	<input type="hidden" name="cuentaId" value="<%= cuenta.getIdCuenta() %>" />
-            <input type="submit" name="btnModificar" value="MODIFICAR" />
+        <form action="adminCuentasServlet" method="get">
+        	<input type="hidden" name="idCuentaSeleccionado" value="<%= cuenta.getIdCuenta() %>" />
+            <input type="submit" name="btnnModificarPrepararFormu" value="MODIFICAR" />
         </form>
     </div>
     </td>

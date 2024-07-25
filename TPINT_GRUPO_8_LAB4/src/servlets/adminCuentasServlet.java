@@ -52,6 +52,8 @@ public class adminCuentasServlet extends HttpServlet {
 		//para listar los ID a la hora de agregar cuenta
 		else if(request.getParameter("botonAgregar")!=null) {
 			prepararCrearCuenta(request, response);
+		}else if(request.getParameter("btnnModificarPrepararFormu")!=null) {
+			prepararModificarCuenta(request, response);
 		}
 		else {  
 			mostrarCuenta(request, response);
@@ -63,13 +65,27 @@ public class adminCuentasServlet extends HttpServlet {
 
 	
 	private void prepararCrearCuenta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ArrayList<Integer> listadoIdClientes = new ArrayList<Integer>();
+		ArrayList<Cliente> listadoIdClientes = new ArrayList<Cliente>();
 		ClienteDao clDao = new ClienteDao();
-		listadoIdClientes = clDao.listarIdClientes();
+		listadoIdClientes = clDao.ListarConEstadoTrue();
+		CuentaDao cuentaDao = new CuentaDao();
+		
+		request.setAttribute("idProximoCrear",cuentaDao.generarNumeroCuenta());
+		request.setAttribute("CbuProximoACrear",cuentaDao.generarCbu());
 		
 		request.setAttribute("listadoIdClientes", listadoIdClientes);
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher("/adminCrearCuenta.jsp");   
 		requestDispatcher.forward(request, response);
+	}
+	
+	
+	private void prepararModificarCuenta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		 CuentaDao cuentaDao = new CuentaDao();
+	        Cuenta cuenta = cuentaDao.buscar_con_id(Integer.parseInt(request.getParameter("idCuentaSeleccionado")));
+	        request.setAttribute("cuentaAModificar", cuenta);
+	        
+	        RequestDispatcher requestDispatcher = request.getRequestDispatcher("/adminCrearCuenta.jsp");
+	        requestDispatcher.forward(request, response);
 	}
 	
 	

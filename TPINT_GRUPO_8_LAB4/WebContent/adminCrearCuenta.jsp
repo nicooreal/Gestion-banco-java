@@ -2,8 +2,10 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <%@ page import="java.util.List"%>
+<%@ page import="java.util.ArrayList"%>
 <%@ page import="java.sql.*" %>
 <%@ page import="Dominio.Cuenta"%>
+<%@ page import="Dominio.Cliente"%>
 <%@ page import="Dao.CuentaDao"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -145,27 +147,20 @@
 	
 		<%
 
-			Cuenta cuentaAux = null;
-			CuentaDao cuentaDao = new CuentaDao();
-			if(request.getParameter("cuentaId") != null){
-				int idBuscado = Integer.parseInt(request.getParameter("cuentaId"));
-				cuentaAux = cuentaDao.buscar_con_id(idBuscado);
-			}
+			Cuenta cuentaAux = (Cuenta) request.getAttribute("cuentaAModificar");
+		
 		%>
 	          
 	       <div class="form-container">
-           <div class="form-group">             
+           <div class="form-group">          
 
-
-
-<label> 
-    <% if (cuentaAux != null) { %> 
-        ID CUENTA: <%= cuentaAux.getIdCuenta() %> 
-    <% } 
-    	else { %> 
-        ID CUENTA NUEVA: <%= cuentaDao.cantidadRegistros()+1 %>  
-    <% 	} %> 
-</label>
+			<label> 
+			   <% if (cuentaAux != null) { %> 
+                        ID CUENTA: <%= cuentaAux.getIdCuenta() %> 
+                    <% } else { %> 
+                        ID CUENTA NUEVA: <%= request.getAttribute("idProximoCrear") %>  
+               <% } %> 
+			</label>
 		
 		
 		<br>
@@ -177,9 +172,11 @@
 		 		<option value="<%= cuentaAux.getCliente().getId()  %>" selected><%= cuentaAux.getCliente().getId() %></option>
 		 	<% }
 		 	   if (request.getAttribute("listadoIdClientes") != null && cuentaAux == null){
-			 		List<Integer> listadoIdClientes =  (List<Integer>)request.getAttribute("listadoIdClientes");
-			 		for (Integer id : listadoIdClientes){   %>
-			 			<option value="<%= id %>"><%= id %></option>
+			 		ArrayList<Cliente> listadoIdClientes =  (ArrayList<Cliente>)request.getAttribute("listadoIdClientes");
+			 		for (Cliente c : listadoIdClientes){   %>
+			 			<option value="<%= c.getId() %>">
+			               ID - Nombre: <%= c.getId() %> - <%= c.getNombre() %> <%= c.getApellido() %>
+			            </option>
 			 	 <% }
 		 	   } %>
 		 </select>
@@ -206,7 +203,7 @@
 		
 		<br>
 		<label>CBU</label>
-        <input type="text" name="cbu" id="cbu" <% if (cuentaAux != null)  { %> value="<%= cuentaAux.getCbu() %>" readonly <% } else { %> value="<%= cuentaDao.generarCbu() %>"readonly <% } %> />
+        <input type="text" name="cbu" id="cbu" <% if (cuentaAux != null)  { %> value="<%= cuentaAux.getCbu() %>" readonly <% } else { %> value="<%= request.getAttribute("CbuProximoACrear")  %>"readonly <% } %> />
 		<br>
 		<label>Saldo</label>
 		<input type="text" name="saldo" id="saldo" pattern="\d+([.,]\d{1,2})?" title="solo números" <% if (cuentaAux != null) { %> value="<%= cuentaAux.getSaldo() %>" <% } else { %> value="<%=10000 %>"readonly <% }  %>>
@@ -221,7 +218,7 @@
 		</div>
 		
 		<%
-		if(request.getParameter("cuentaId") != null){
+		if(cuentaAux != null){
 			
 		%>
 		<button type="submit" class="btn btn-primary" name="btnModificarCuenta" id="modificarCuenta">Modificar</button>
