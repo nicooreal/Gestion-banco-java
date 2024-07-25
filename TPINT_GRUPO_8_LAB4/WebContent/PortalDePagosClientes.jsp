@@ -95,9 +95,7 @@ $(document).ready(function() {
 					   
        					<td class"action-buttons" >
 						    <div style="display:flex">
-				               	<form action="PortalPagosBancoServlet" method="get">
-						            <input type="submit" name="btnVerMovimientos" value="Ver Movimiento" />
-						        </form>
+					            <input type="submit" name="btnVerMovimientos" value="Efectuar Pago" disabled />
 							</div>
 					    </td>
 				       
