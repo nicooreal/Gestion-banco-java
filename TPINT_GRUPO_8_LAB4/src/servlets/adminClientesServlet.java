@@ -188,7 +188,6 @@ public class adminClientesServlet extends HttpServlet {
 	            // Redireccionamiento a la lista de clientes después de agregar
 	            mostrarClientes(request, response);
             }else {
-            	 System.out.println("existeDNI TRUE");
                  RequestDispatcher rd = request.getRequestDispatcher("/DniDuplicadoError.jsp");
                  rd.forward(request, response);
             }

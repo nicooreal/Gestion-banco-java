@@ -114,7 +114,7 @@ $(document).ready(function() {
     
     <div>
 	    <form method="get" action="adminInformesServlet">
-	    	<label>INFORME 1: Clientes con saldo mayor a: </label>
+	    	<label>INFORME 1: Cuentas con saldo mayor a: </label>
 		    <input type="number" id="informe1" name="inputInforme1" pattern="\d+" title="solo números" required>
 		   <label>  Fecha de inicio    </label>
 		   <input type="text" id="inputFechaInicio1" name="inputFechaInicio1" pattern="\d{4}-\d{2}-\d{2}"  title="ingrese la fecha en el formato YYYY-MM-DD"required>
@@ -129,7 +129,7 @@ $(document).ready(function() {
 		
 		
 		 <form method="get" action="adminInformesServlet">
-		    <label>INFORME 2: Clientes con saldo menor a: </label>
+		    <label>INFORME 2: Cuentas con saldo menor a: </label>
 		    <input type="number" id="informe2" name="inputInforme2" pattern="\d+" title="solo números" required>
 		   		 		   <label>  Fecha de inicio    </label>
 		   		   <input type="text" id="inputFechaInicio2" name="inputFechaInicio2" pattern="\d{4}-\d{2}-\d{2}" title="ingrese la fecha en el formato YYYY-MM-DD" required>

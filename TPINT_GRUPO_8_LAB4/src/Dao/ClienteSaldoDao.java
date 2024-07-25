@@ -47,8 +47,6 @@ public class ClienteSaldoDao {
 				ClienteDao cd = new ClienteDao();
 				Cliente cAux = cd.buscar_con_id(resultSet.getInt("id_cliente"));
 				
-				System.out.println(cAux.toString()); 
-				
 				//se setea desde el constructor
 				ClienteSaldo csAux = new ClienteSaldo(cAux, resultSet.getFloat("total_saldo"));
 				
