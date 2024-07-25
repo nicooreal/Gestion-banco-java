@@ -1,11 +1,24 @@
 -- VISTA SALDO POR CLIENTE (PARA INFORME 1)
 DROP VIEW IF EXISTS vw_saldo_por_cliente;
-
+/*
 CREATE VIEW vw_saldo_por_cliente AS
 SELECT id_cliente, SUM(saldo) AS total_saldo, fecha 
 FROM cuentas
 GROUP BY id_cliente
 ORDER BY total_saldo DESC;
+
+ESTA VISTA LA HIZO MARIAN PERO NO FILTRA TODAS LAS CUENTAS 
+
+*/
+
+CREATE VIEW vw_saldo_por_cliente AS
+SELECT id_cliente, saldo AS total_saldo, fecha 
+FROM cuentas
+
+
+
+
+
 
 -- INFORME 1: SP BUSCA SALDOS POR CLIENTE MAYORES A
 DROP PROCEDURE IF EXISTS sp_buscar_saldos_mayores;
