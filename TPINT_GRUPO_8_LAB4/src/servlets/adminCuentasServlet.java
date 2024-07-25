@@ -17,6 +17,7 @@ import Dao.CuentaDao;
 import Dominio.Cliente;
 import Dominio.Cuenta;
 import Dominio.TiposCuenta;
+import negocio.NegocioCliente;
 
 /**
  * Servlet implementation class adminCuentasServlet
@@ -25,9 +26,9 @@ import Dominio.TiposCuenta;
 public class adminCuentasServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
+	NegocioCliente negCliente = new NegocioCliente();
+	
+	
     public adminCuentasServlet() {
         super();
     }
@@ -57,23 +58,19 @@ public class adminCuentasServlet extends HttpServlet {
 		}
 		else {  
 			mostrarCuenta(request, response);
-		
-			
 		}
 	
 	 }
 
 	
 	private void prepararCrearCuenta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ArrayList<Cliente> listadoIdClientes = new ArrayList<Cliente>();
-		ClienteDao clDao = new ClienteDao();
-		listadoIdClientes = clDao.ListarConEstadoTrue();
+		
 		CuentaDao cuentaDao = new CuentaDao();
 		
 		request.setAttribute("idProximoCrear",cuentaDao.generarNumeroCuenta());
 		request.setAttribute("CbuProximoACrear",cuentaDao.generarCbu());
 		
-		request.setAttribute("listadoIdClientes", listadoIdClientes);
+		request.setAttribute("listadoIdClientes", negCliente.listarConTrue());
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher("/adminCrearCuenta.jsp");   
 		requestDispatcher.forward(request, response);
 	}
