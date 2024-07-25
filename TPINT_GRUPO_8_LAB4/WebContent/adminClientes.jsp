@@ -18,50 +18,83 @@ $(document).ready(function() {
 <title>Portal bancario UTN</title>
 
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f9f9f9;
-    }
-    .container {
-        width: 60%;
-        margin: 0 auto;
-        padding: 20px;
-        background-color: #ffffff;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .header {
-        background-color: #f2f2f2;
-        padding: 20px;
-        text-align: center;
-        border-bottom: 1px solid #ddd;
-    }
-    .navbar {
-        overflow: hidden;
-        background-color: #333;
-        margin-bottom: 20px;
-    }
-    .navbar a {
-        float: left;
-        display: block;
-        color: white;
-        text-align: center;
-        padding: 14px 20px;
-        text-decoration: none;
-    }
-    .navbar a:hover {
-        background-color: #ddd;
-        color: black;
-    }
-    table.dataTable thead th {
-        background-color: #f2f2f2;
-        color: #333;
-        font-weight: bold;
-    }
-    table.dataTable tbody tr:hover {
-        background-color: #e6f7ff;
-    }
-</style>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+        }
+        .container {
+            width: 60%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background-color: #f2f2f2;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .navbar {
+            overflow: hidden;
+            background-color: #333;
+            margin-bottom: 20px;
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+        .info-section {
+            margin-bottom: 20px;
+        }
+        .info-section h2 {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .info-section p {
+            margin: 10px 0;
+        }
+        .info-section table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .info-section table, .info-section th, .info-section td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .info-section th {
+            background-color: #f2f2f2;
+        }
+        table {
+		   width: 100%;
+		   border: 1px solid #000;
+		}
+		th, td {
+		   width: 15%;
+		   text-align: center;
+		   vertical-align: top;
+		   border: 1px solid #000;
+		   border-spacing: 0;
+		   border-collapse: collapse;
+		   background: #fff;
+		   color: #000;
+		}
+		
+		caption {
+		   padding: 0.3em;
+		}
+                     .navbar .right {
+            float: right; 
+    </style>
 </head>
 <body>
 

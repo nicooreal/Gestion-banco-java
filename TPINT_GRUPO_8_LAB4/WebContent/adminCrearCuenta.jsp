@@ -128,6 +128,13 @@
    
    
     </style>
+<script>
+    function confirmCreation() {
+        alert("Cuenta creada exitosamente.");
+    }
+</script>
+
+
 </head>
 <body>
 
@@ -226,7 +233,7 @@
 		<%}
 		    else { %>
 		
-		<button type="submit" class="btn btn-primary" name="SubmitCuenta" id="SubmitCuenta">Crear Cuenta</button>
+		<button type="submit" class="btn btn-primary" name="SubmitCuenta" id="SubmitCuenta" onclick="confirmCreation()">Crear Cuenta</button>
 		
 		<% } %>
 	

@@ -278,7 +278,7 @@
 		<br>
 		
 		<label for="fecha">Fecha nacimiento (YYYY-MM-DD):</label>
-		<input type="text" name="fechaNacimiento" id="fechaNacimiento" pattern="\d{4}-\d{2}-\d{2}" title="ingrese la fecha en el formato YYYY-MM-DD" <% if (cAux != null) { %> value="<%= cAux.getFechaNacimiento().toString() %>" <% } %>>
+		<input type="text" name="fechaNacimiento" id="fechaNacimiento" pattern="\d{4}-\d{2}-\d{2}"title="ingrese la fecha en el formato YYYY-MM-DD"  <% if (cAux != null) { %> value="<%= cAux.getFechaNacimiento().toString() %>" <% } %>>
 		<br>
 		<label>Direccion</label>
 		<input type="text" name="direccion" id="direccion" <% if (cAux != null) { %> value="<%= cAux.getDireccion() %>" <% } %>>

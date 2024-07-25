@@ -104,17 +104,35 @@
     <div>
 	    <form method="get" action="adminInformesServlet">
 	    	<label>INFORME 1: Clientes con saldo mayor a: </label>
-		    <input type="number" id="informe1" name="inputInforme1" required>
+		    <input type="number" id="informe1" name="inputInforme1" pattern="\d+" title="solo números" required>
+		   <label>  Fecha de inicio    </label>
+		   <input type="text" id="inputFechaInicio1" name="inputFechaInicio1" pattern="\d{4}-\d{2}-\d{2}"  title="ingrese la fecha en el formato YYYY-MM-DD"required>
+		   <label>  Fecha limite    </label>
+		   <input type="text" id="inputFechaFin1" name="inputFechaFin1" pattern="\d{4}-\d{2}-\d{2}" title="ingrese la fecha en el formato YYYY-MM-DD" required>
 		    <input type="submit" id="btnInforme1" name="btnInforme1" value="Buscar"> <!-- sp_saldo_por_cliente -->
 		    <br>
 		 </form>
+		
+		
+		
+		
+		
 		 <form method="get" action="adminInformesServlet">
 		    <label>INFORME 2: Clientes con saldo menor a: </label>
-		    <input type="number" id="informe2" name="inputInforme2" required>
+		    <input type="number" id="informe2" name="inputInforme2" pattern="\d+" title="solo números" required>
+		   		 		   <label>  Fecha de inicio    </label>
+		   		   <input type="text" id="inputFechaInicio2" name="inputFechaInicio2" pattern="\d{4}-\d{2}-\d{2}" title="ingrese la fecha en el formato YYYY-MM-DD" required>
+		 		   <label>  Fecha limite    </label>
+		   <input type="text" id="inputFechaFin2" name="inputFechaFin2" pattern="\d{4}-\d{2}-\d{2}" title="ingrese la fecha en el formato YYYY-MM-DD" required>
 		    <input type="submit" id="btnInforme2" name="btnInforme2" value="Buscar"> <!-- sp_saldo_por_cliente -->
 		    <br>
 		 </form>
-		 <form method="get" action="adminInformesServlet">
+		
+
+
+
+
+<form method="get" action="adminInformesServlet">
 		    <label>INFORME 3: Cantidad de clientes por provincias: </label>
 		    <input type="submit" id="btnInforme3" name="btnInforme3" value="Ver"> <!-- vw_clientes_por_provincia -->
 		    <br>

@@ -61,7 +61,7 @@ public class LoginServlet extends HttpServlet {
 					
 			
 			        if (usuario.getAcceso() == "Administrador") {
-						RequestDispatcher requestDispatcher = request.getRequestDispatcher("/PortalAdministradores.jsp");   
+						RequestDispatcher requestDispatcher = request.getRequestDispatcher("/adminClientesServlet");   
 						requestDispatcher.forward(request, response);	
 					}
 			

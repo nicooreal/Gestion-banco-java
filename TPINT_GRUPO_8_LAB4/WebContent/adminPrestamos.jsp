@@ -12,6 +12,13 @@
 $(document).ready(function() {
     $('#table_id').DataTable();
 });
+
+
+function confirmAction(message) {
+    return confirm(message);
+}
+
+
 </script>
    
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -141,12 +148,12 @@ $(document).ready(function() {
     <div style="display:flex">
       
        <% if (prestamo.getEstado().name() == "Solicitado") {%>
-        <form action="adminPrestamosServlet" method="post">
+        <form action="adminPrestamosServlet" method="post" onsubmit="return confirmAction('¿Está seguro de que desea rechazar este préstamo?');">
             <input type="hidden" name="prestamoId" value="<%= prestamo.getIdPrestamo() %>" />
             <input type="submit" name="btnRechazar" value="RECHAZAR" />
         </form>
         
-       <form action="adminPrestamosServlet" method="post">
+       <form action="adminPrestamosServlet" method="post" onsubmit="return confirmAction('¿Está seguro de que desea aprobar este préstamo?');">
             <input type="hidden" name="prestamoId" value="<%= prestamo.getIdPrestamo() %>" />
             <input type="hidden" name="idCuentaDestino" value="<%= prestamo.getIdCuentaDestino() %>" />
             <input type="submit" name="btnAprobar" value="APROBAR" />
@@ -156,7 +163,7 @@ $(document).ready(function() {
         
           
 
-
+ 
         <% if (prestamo.getEstado().name() == "Rechazado") {%>
    
 <!-- 
