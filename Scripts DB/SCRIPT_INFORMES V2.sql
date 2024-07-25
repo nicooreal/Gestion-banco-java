@@ -67,3 +67,39 @@ FROM clientes
 INNER JOIN provincias AS tProv ON clientes.provincia = tProv.id_provincia 
 GROUP BY clientes.provincia
 ORDER BY ClientesXProvincia DESC
+
+
+
+
+
+
+
+
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `TransferirDinero`(IN p_cbu_origen VARCHAR(22), IN p_cbu_destino VARCHAR(22), IN p_monto DECIMAL(10,2),
+    OUT p_id_cuenta_origen INT,
+    OUT p_id_cuenta_destino INT)
+BEGIN
+    DECLARE saldo_origen DECIMAL(10,2);
+
+    -- Obtener el ID y el saldo de la cuenta de origen
+    SELECT id_cuenta, saldo INTO p_id_cuenta_origen, saldo_origen FROM cuentas WHERE CBU = p_cbu_origen;
+
+    -- Obtener el ID de la cuenta de destino
+    SELECT id_cuenta INTO p_id_cuenta_destino FROM cuentas WHERE CBU = p_cbu_destino;
+
+    IF saldo_origen >= p_monto THEN
+        UPDATE cuentas SET saldo = saldo - p_monto WHERE CBU = p_cbu_origen;
+        UPDATE cuentas SET saldo = saldo + p_monto WHERE CBU = p_cbu_destino;
+
+        -- Opcional: Se pueden Insertar registros de movimiento aca
+    ELSE
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No hay suficiente saldo para realizar la transferencia';
+    END IF;
+END
+
+
+
+
+
+
