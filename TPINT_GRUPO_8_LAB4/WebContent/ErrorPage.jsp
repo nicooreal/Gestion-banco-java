@@ -31,10 +31,11 @@
 		    <div class="header">
 		        <h1 style="color:red">Fallo en la aplicacion</h1>
 		        <p><%= request.getAttribute("exception") %></p>
+		        <form method="post" action="<%= request.getAttribute("paginaOrigen") %>">
+		        	<input type="submit" name="botonVolver" value="VOLVER" class="button" />
+		   	    </form>
 		    </div>
-		    <form method="post" action="<%= request.getAttribute("paginaOrigen") %>">
-		        <input type="submit" name="botonVolver" value="VOLVER" class="button" />
-		    </form>
+		    
 		</div>
 
 	</body>

@@ -57,7 +57,7 @@ public class MovimientoDao implements iMovimientoDao {
 				statement = conexion.prepareStatement(insertMovimientoDesdePrestamo);
 				statement.setDate(1, sqlDate);
 				statement.setString(2, concepto);
-				statement.setFloat(3, pagoReferido.getImporteApagar());
+				statement.setFloat(3, pagoReferido.getImporteApagar()*-1);
 				statement.setInt(4, idTipoMovimiento);
 				statement.setInt(5, idCuentaBanco);
 				statement.setInt(6, pagoReferido.getIdCuenta());

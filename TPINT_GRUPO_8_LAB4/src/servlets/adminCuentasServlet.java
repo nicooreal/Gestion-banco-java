@@ -20,9 +20,7 @@ import Dominio.TiposCuenta;
 import negocio.NegocioCliente;
 import negocio.NegocioCuenta;
 
-/**
- * Servlet implementation class adminCuentasServlet
- */
+
 @WebServlet("/adminCuentasServlet")
 public class adminCuentasServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -185,7 +183,7 @@ public class adminCuentasServlet extends HttpServlet {
         	mostrarCuenta(request, response);
         }else {
         	String error = "NO SE PUDO ELIMINAR LA CUENTA DE ESTE CLIENTE.";
-        	String redirect = "adminClientesServlet";
+        	String redirect = "adminCuentassServlet";
         	request.setAttribute("paginaOrigen", redirect);
         	request.setAttribute("exception", error);
         	RequestDispatcher requestDispatcher = request.getRequestDispatcher("/ErrorPage.jsp");   
@@ -206,7 +204,7 @@ public class adminCuentasServlet extends HttpServlet {
         }
         else {
         	String error = "NO SE PUDO AGREGAR LA CUENTA A ESTE CLIENTE. (limite alcanzado 3)";
-        	String redirect = "adminClientesServlet";
+        	String redirect = "adminCuentassServlet";
         	request.setAttribute("paginaOrigen", redirect);
         	request.setAttribute("exception", error);
         	RequestDispatcher requestDispatcher = request.getRequestDispatcher("/ErrorPage.jsp");   
@@ -242,13 +240,6 @@ public class adminCuentasServlet extends HttpServlet {
 		requestDispatcher.forward(request, response);
 	}
 		
-		
-		
-		
-	
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
