@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="D:/Descargas/mysql-connector-java-5.1.47-bin.jar">
+	<classpathentry kind="lib" path="C:/Users/Nico/eclipse-workspace/mysql-connector-java-5.1.47/mysql-connector-java-5.1.47-bin.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
@@ -19,7 +19,7 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/Descargas/gson-2.6.2.jar">
+	<classpathentry kind="lib" path="C:/Users/Nico/eclipse-workspace/mysql-connector-java-5.1.47/gson-2.6.2.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
