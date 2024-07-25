@@ -18,8 +18,8 @@
             <hr>
             <p class="mb-0">Gracias por utilizar nuestros servicios.</p>
         </div>
-        <a href="clienteTransferencias.jsp" class="btn btn-primary">Realizar Otra Transferencia</a>
-        <a href="index.jsp" class="btn btn-secondary">Volver al Inicio</a>
+
+        <a href="clientePerfilServlet" class="btn btn-secondary">Volver al Inicio</a>
     </div>
 </body>
 </html>
