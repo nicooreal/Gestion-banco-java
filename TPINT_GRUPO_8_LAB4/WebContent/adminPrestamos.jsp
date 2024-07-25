@@ -3,8 +3,25 @@
     <%@ page import="java.util.ArrayList"%>
 <!DOCTYPE html>
 <html>
+
+
+
 <head>
-    <meta charset="UTF-8">
+   
+   <script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script type="text/javascript" charset="utf8"
+	src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#table_id').DataTable();
+});
+</script>
+   
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+
 <title>Portal bancario UTN</title>
     <style>
         body {
@@ -87,7 +104,7 @@
 	  
 	</form>
 
-	<table>
+	<table border="1" id="table_id" class="display">
 	        <thead>
 	            <tr>
 	                <th>ID Prestamo</th>
@@ -100,7 +117,7 @@
                     <th>Cuotas</th>
                     <th>Id cuenta destino</th>
                     <th>Estado</th>
-
+                    <th></th>
 
 
 	            </tr>
