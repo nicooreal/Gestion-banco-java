@@ -48,8 +48,6 @@ public class adminClientesServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
     	
-    	
-    	
        if (request.getParameter("botonMostrarEliminados")!=null) {
             mostrarClientesEliminados(request, response);
        } else if (request.getParameter("botonMostrarActivados")!=null) {
@@ -228,8 +226,7 @@ public class adminClientesServlet extends HttpServlet {
         //cliDao.BajaLogicaCliente(idParaBorrar);
 
         if (baja == 1) {
-            RequestDispatcher rd = request.getRequestDispatcher("adminClientes.jsp");
-            rd.forward(request, response);
+        	mostrarClientes(request, response);
         }
     }
 
@@ -310,8 +307,7 @@ public class adminClientesServlet extends HttpServlet {
         int alta = negCliente.AltaLogicaCliente(idParaActivar);
 
         if (alta == 1) {
-            RequestDispatcher rd = request.getRequestDispatcher("adminClientes.jsp");
-            rd.forward(request, response);
+        	mostrarClientes(request, response);
         }
     }
 

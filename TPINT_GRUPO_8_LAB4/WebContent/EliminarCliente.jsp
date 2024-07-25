@@ -37,7 +37,7 @@ if (clienteId != null && !clienteId.isEmpty()) {
     <form action="adminClientesServlet" method="get">
         <input type="hidden" name="ClienteId" value="<%= idCliente %>" />
         <input type="submit" name="btnEliminar" value="CONFIRMAR ELIMINACION " /><br>
-        <a class="nav-link" aria-current="page" href="adminClientes.jsp">Cancelar</a>
+        <a class="nav-link" aria-current="page" href="adminClientesServlet">Cancelar</a>
     </form>
 
 
